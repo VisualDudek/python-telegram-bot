@@ -27,16 +27,16 @@ from telegram.vendor.ptb_urllib3 import urllib3
 import telegram
 from tests.conftest import env_var_2_bool
 
-IGNORED_OBJECTS = ('ResponseParameters', 'CallbackGame')
+IGNORED_OBJECTS = ("ResponseParameters", "CallbackGame")
 IGNORED_PARAMETERS = {
-    'self',
-    'args',
-    '_kwargs',
-    'read_latency',
-    'network_delay',
-    'timeout',
-    'bot',
-    'api_kwargs',
+    "self",
+    "args",
+    "_kwargs",
+    "read_latency",
+    "network_delay",
+    "timeout",
+    "bot",
+    "api_kwargs",
 }
 
 
@@ -49,12 +49,12 @@ def find_next_sibling_until(tag, name, until):
 
 
 def parse_table(h4):
-    table = find_next_sibling_until(h4, 'table', h4.find_next_sibling('h4'))
+    table = find_next_sibling_until(h4, "table", h4.find_next_sibling("h4"))
     if not table:
         return []
     t = []
-    for tr in table.find_all('tr')[1:]:
-        t.append([td.text for td in tr.find_all('td')])
+    for tr in table.find_all("tr")[1:]:
+        t.append([td.text for td in tr.find_all("td")])
     return t
 
 
@@ -75,31 +75,31 @@ def check_method(h4):
         checked.append(parameter[0])
 
     ignored = IGNORED_PARAMETERS.copy()
-    if name == 'getUpdates':
-        ignored -= {'timeout'}  # Has it's own timeout parameter that we do wanna check for
+    if name == "getUpdates":
+        ignored -= {"timeout"}  # Has it's own timeout parameter that we do wanna check for
     elif name in (
-        f'send{media_type}'
+        f"send{media_type}"
         for media_type in [
-            'Animation',
-            'Audio',
-            'Document',
-            'Photo',
-            'Video',
-            'VideoNote',
-            'Voice',
+            "Animation",
+            "Audio",
+            "Document",
+            "Photo",
+            "Video",
+            "VideoNote",
+            "Voice",
         ]
     ):
-        ignored |= {'filename'}  # Convenience parameter
-    elif name == 'setGameScore':
-        ignored |= {'edit_message'}  # TODO: Now deprecated, so no longer in telegrams docs
-    elif name == 'sendContact':
-        ignored |= {'contact'}  # Added for ease of use
-    elif name in ['sendLocation', 'editMessageLiveLocation']:
-        ignored |= {'location'}  # Added for ease of use
-    elif name == 'sendVenue':
-        ignored |= {'venue'}  # Added for ease of use
-    elif name == 'answerInlineQuery':
-        ignored |= {'current_offset'}  # Added for ease of use
+        ignored |= {"filename"}  # Convenience parameter
+    elif name == "setGameScore":
+        ignored |= {"edit_message"}  # TODO: Now deprecated, so no longer in telegrams docs
+    elif name == "sendContact":
+        ignored |= {"contact"}  # Added for ease of use
+    elif name in ["sendLocation", "editMessageLiveLocation"]:
+        ignored |= {"location"}  # Added for ease of use
+    elif name == "sendVenue":
+        ignored |= {"venue"}  # Added for ease of use
+    elif name == "answerInlineQuery":
+        ignored |= {"current_offset"}  # Added for ease of use
 
     assert (sig.parameters.keys() ^ checked) - ignored == set()
 
@@ -115,19 +115,19 @@ def check_object(h4):
     checked = []
     for parameter in table:
         field = parameter[0]
-        if field == 'from':
-            field = 'from_user'
+        if field == "from":
+            field = "from_user"
         elif (
-            name.startswith('InlineQueryResult')
-            or name.startswith('InputMedia')
-            or name.startswith('BotCommandScope')
-        ) and field == 'type':
+            name.startswith("InlineQueryResult")
+            or name.startswith("InputMedia")
+            or name.startswith("BotCommandScope")
+        ) and field == "type":
             continue
-        elif (name.startswith('ChatMember')) and field == 'status':
+        elif (name.startswith("ChatMember")) and field == "status":
             continue
         elif (
-            name.startswith('PassportElementError') and field == 'source'
-        ) or field == 'remove_keyboard':
+            name.startswith("PassportElementError") and field == "source"
+        ) or field == "remove_keyboard":
             continue
 
         param = sig.parameters.get(field)
@@ -137,59 +137,59 @@ def check_object(h4):
         checked.append(field)
 
     ignored = IGNORED_PARAMETERS.copy()
-    if name == 'InputFile':
+    if name == "InputFile":
         return
-    if name == 'InlineQueryResult':
-        ignored |= {'id', 'type'}  # attributes common to all subclasses
-    if name == 'ChatMember':
-        ignored |= {'user', 'status'}  # attributes common to all subclasses
-    if name == 'ChatMember':
+    if name == "InlineQueryResult":
+        ignored |= {"id", "type"}  # attributes common to all subclasses
+    if name == "ChatMember":
+        ignored |= {"user", "status"}  # attributes common to all subclasses
+    if name == "ChatMember":
         ignored |= {
-            'can_add_web_page_previews',  # for backwards compatibility
-            'can_be_edited',
-            'can_change_info',
-            'can_delete_messages',
-            'can_edit_messages',
-            'can_invite_users',
-            'can_manage_chat',
-            'can_manage_voice_chats',
-            'can_pin_messages',
-            'can_post_messages',
-            'can_promote_members',
-            'can_restrict_members',
-            'can_send_media_messages',
-            'can_send_messages',
-            'can_send_other_messages',
-            'can_send_polls',
-            'custom_title',
-            'is_anonymous',
-            'is_member',
-            'until_date',
+            "can_add_web_page_previews",  # for backwards compatibility
+            "can_be_edited",
+            "can_change_info",
+            "can_delete_messages",
+            "can_edit_messages",
+            "can_invite_users",
+            "can_manage_chat",
+            "can_manage_voice_chats",
+            "can_pin_messages",
+            "can_post_messages",
+            "can_promote_members",
+            "can_restrict_members",
+            "can_send_media_messages",
+            "can_send_messages",
+            "can_send_other_messages",
+            "can_send_polls",
+            "custom_title",
+            "is_anonymous",
+            "is_member",
+            "until_date",
         }
-    if name == 'BotCommandScope':
-        ignored |= {'type'}  # attributes common to all subclasses
-    elif name == 'User':
-        ignored |= {'type'}  # TODO: Deprecation
-    elif name in ('PassportFile', 'EncryptedPassportElement'):
-        ignored |= {'credentials'}
-    elif name == 'PassportElementError':
-        ignored |= {'message', 'type', 'source'}
-    elif name.startswith('InputMedia'):
-        ignored |= {'filename'}  # Convenience parameter
+    if name == "BotCommandScope":
+        ignored |= {"type"}  # attributes common to all subclasses
+    elif name == "User":
+        ignored |= {"type"}  # TODO: Deprecation
+    elif name in ("PassportFile", "EncryptedPassportElement"):
+        ignored |= {"credentials"}
+    elif name == "PassportElementError":
+        ignored |= {"message", "type", "source"}
+    elif name.startswith("InputMedia"):
+        ignored |= {"filename"}  # Convenience parameter
 
     assert (sig.parameters.keys() ^ checked) - ignored == set()
 
 
 argvalues = []
 names = []
-http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-request = http.request('GET', 'https://core.telegram.org/bots/api')
-soup = BeautifulSoup(request.data.decode('utf-8'), 'html.parser')
+http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
+request = http.request("GET", "https://core.telegram.org/bots/api")
+soup = BeautifulSoup(request.data.decode("utf-8"), "html.parser")
 
-for thing in soup.select('h4 > a.anchor'):
+for thing in soup.select("h4 > a.anchor"):
     # Methods and types don't have spaces in them, luckily all other sections of the docs do
     # TODO: don't depend on that
-    if '-' not in thing['name']:
+    if "-" not in thing["name"]:
         h4 = thing.parent
 
         # Is it a method
@@ -201,9 +201,9 @@ for thing in soup.select('h4 > a.anchor'):
             names.append(h4.text)
 
 
-@pytest.mark.parametrize(('method', 'data'), argvalues=argvalues, ids=names)
+@pytest.mark.parametrize(("method", "data"), argvalues=argvalues, ids=names)
 @pytest.mark.skipif(
-    not env_var_2_bool(os.getenv('TEST_OFFICIAL')), reason='test_official is not enabled'
+    not env_var_2_bool(os.getenv("TEST_OFFICIAL")), reason="test_official is not enabled"
 )
 def test_official(method, data):
     method(data)

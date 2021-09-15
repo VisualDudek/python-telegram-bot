@@ -32,15 +32,15 @@ class TestDice:
 
     def test_slot_behaviour(self, dice, recwarn, mro_slots):
         for attr in dice.__slots__:
-            assert getattr(dice, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(dice, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not dice.__dict__, f"got missing slot(s): {dice.__dict__}"
         assert len(mro_slots(dice)) == len(set(mro_slots(dice))), "duplicate slot"
-        dice.custom, dice.value = 'should give warning', self.value
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        dice.custom, dice.value = "should give warning", self.value
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
-    @pytest.mark.parametrize('emoji', Dice.ALL_EMOJI)
+    @pytest.mark.parametrize("emoji", Dice.ALL_EMOJI)
     def test_de_json(self, bot, emoji):
-        json_dict = {'value': self.value, 'emoji': emoji}
+        json_dict = {"value": self.value, "emoji": emoji}
         dice = Dice.de_json(json_dict, bot)
 
         assert dice.value == self.value
@@ -51,15 +51,15 @@ class TestDice:
         dice_dict = dice.to_dict()
 
         assert isinstance(dice_dict, dict)
-        assert dice_dict['value'] == dice.value
-        assert dice_dict['emoji'] == dice.emoji
+        assert dice_dict["value"] == dice.value
+        assert dice_dict["emoji"] == dice.emoji
 
     def test_equality(self):
-        a = Dice(3, '🎯')
-        b = Dice(3, '🎯')
-        c = Dice(3, '🎲')
-        d = Dice(4, '🎯')
-        e = BotCommand('start', 'description')
+        a = Dice(3, "🎯")
+        b = Dice(3, "🎯")
+        c = Dice(3, "🎲")
+        d = Dice(4, "🎯")
+        e = BotCommand("start", "description")
 
         assert a == b
         assert hash(a) == hash(b)

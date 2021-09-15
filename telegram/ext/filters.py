@@ -42,13 +42,13 @@ from typing import (
 from telegram import Chat, Message, MessageEntity, Update, User
 
 __all__ = [
-    'Filters',
-    'BaseFilter',
-    'MessageFilter',
-    'UpdateFilter',
-    'InvertedFilter',
-    'MergedFilter',
-    'XORFilter',
+    "Filters",
+    "BaseFilter",
+    "MessageFilter",
+    "UpdateFilter",
+    "InvertedFilter",
+    "MergedFilter",
+    "XORFilter",
 ]
 
 from telegram.utils.deprecate import TelegramDeprecationWarning, set_new_attribute_deprecated
@@ -114,11 +114,11 @@ class BaseFilter(ABC):
     """
 
     if py_ver < (3, 7):
-        __slots__ = ('_name', '_data_filter')
+        __slots__ = ("_name", "_data_filter")
     else:
-        __slots__ = ('_name', '_data_filter', '__dict__')  # type: ignore[assignment]
+        __slots__ = ("_name", "_data_filter", "__dict__")  # type: ignore[assignment]
 
-    def __new__(cls, *args: object, **kwargs: object) -> 'BaseFilter':  # pylint: disable=W0613
+    def __new__(cls, *args: object, **kwargs: object) -> "BaseFilter":  # pylint: disable=W0613
         instance = super().__new__(cls)
         instance._name = None
         instance._data_filter = False
@@ -129,16 +129,16 @@ class BaseFilter(ABC):
     def __call__(self, update: Update) -> Optional[Union[bool, DataDict]]:
         ...
 
-    def __and__(self, other: 'BaseFilter') -> 'BaseFilter':
+    def __and__(self, other: "BaseFilter") -> "BaseFilter":
         return MergedFilter(self, and_filter=other)
 
-    def __or__(self, other: 'BaseFilter') -> 'BaseFilter':
+    def __or__(self, other: "BaseFilter") -> "BaseFilter":
         return MergedFilter(self, or_filter=other)
 
-    def __xor__(self, other: 'BaseFilter') -> 'BaseFilter':
+    def __xor__(self, other: "BaseFilter") -> "BaseFilter":
         return XORFilter(self, other)
 
-    def __invert__(self) -> 'BaseFilter':
+    def __invert__(self) -> "BaseFilter":
         return InvertedFilter(self)
 
     def __setattr__(self, key: str, value: object) -> None:
@@ -253,7 +253,7 @@ class InvertedFilter(UpdateFilter):
 
     """
 
-    __slots__ = ('f',)
+    __slots__ = ("f",)
 
     def __init__(self, f: BaseFilter):
         self.f = f
@@ -267,7 +267,7 @@ class InvertedFilter(UpdateFilter):
 
     @name.setter
     def name(self, name: str) -> NoReturn:
-        raise RuntimeError('Cannot set name for InvertedFilter')
+        raise RuntimeError("Cannot set name for InvertedFilter")
 
 
 class MergedFilter(UpdateFilter):
@@ -280,7 +280,7 @@ class MergedFilter(UpdateFilter):
 
     """
 
-    __slots__ = ('base_filter', 'and_filter', 'or_filter')
+    __slots__ = ("base_filter", "and_filter", "or_filter")
 
     def __init__(
         self, base_filter: BaseFilter, and_filter: BaseFilter = None, or_filter: BaseFilter = None
@@ -353,7 +353,7 @@ class MergedFilter(UpdateFilter):
 
     @name.setter
     def name(self, name: str) -> NoReturn:
-        raise RuntimeError('Cannot set name for MergedFilter')
+        raise RuntimeError("Cannot set name for MergedFilter")
 
 
 class XORFilter(UpdateFilter):
@@ -366,7 +366,7 @@ class XORFilter(UpdateFilter):
 
     """
 
-    __slots__ = ('base_filter', 'xor_filter', 'merged_filter')
+    __slots__ = ("base_filter", "xor_filter", "merged_filter")
 
     def __init__(self, base_filter: BaseFilter, xor_filter: BaseFilter):
         self.base_filter = base_filter
@@ -378,22 +378,22 @@ class XORFilter(UpdateFilter):
 
     @property
     def name(self) -> str:
-        return f'<{self.base_filter} xor {self.xor_filter}>'
+        return f"<{self.base_filter} xor {self.xor_filter}>"
 
     @name.setter
     def name(self, name: str) -> NoReturn:
-        raise RuntimeError('Cannot set name for XORFilter')
+        raise RuntimeError("Cannot set name for XORFilter")
 
 
 class _DiceEmoji(MessageFilter):
-    __slots__ = ('emoji',)
+    __slots__ = ("emoji",)
 
     def __init__(self, emoji: str = None, name: str = None):
-        self.name = f'Filters.dice.{name}' if name else 'Filters.dice'
+        self.name = f"Filters.dice.{name}" if name else "Filters.dice"
         self.emoji = emoji
 
     class _DiceValues(MessageFilter):
-        __slots__ = ('values', 'emoji')
+        __slots__ = ("values", "emoji")
 
         def __init__(
             self,
@@ -403,7 +403,7 @@ class _DiceEmoji(MessageFilter):
         ):
             self.values = [values] if isinstance(values, int) else values
             self.emoji = emoji
-            self.name = f'{name}({values})'
+            self.name = f"{name}({values})"
 
         def filter(self, message: Message) -> bool:
             if message.dice and message.dice.value in self.values:
@@ -414,7 +414,7 @@ class _DiceEmoji(MessageFilter):
 
     def __call__(  # type: ignore[override]
         self, update: Union[Update, List[int], Tuple[int]]
-    ) -> Union[bool, '_DiceValues']:
+    ) -> Union[bool, "_DiceValues"]:
         if isinstance(update, Update):
             return self.filter(update.effective_message)
         return self._DiceValues(update, self.name, emoji=self.emoji)
@@ -437,14 +437,14 @@ class Filters:
 
     """
 
-    __slots__ = ('__dict__',)
+    __slots__ = ("__dict__",)
 
     def __setattr__(self, key: str, value: object) -> None:
         set_new_attribute_deprecated(self, key, value)
 
     class _All(MessageFilter):
         __slots__ = ()
-        name = 'Filters.all'
+        name = "Filters.all"
 
         def filter(self, message: Message) -> bool:
             return True
@@ -454,14 +454,14 @@ class Filters:
 
     class _Text(MessageFilter):
         __slots__ = ()
-        name = 'Filters.text'
+        name = "Filters.text"
 
         class _TextStrings(MessageFilter):
-            __slots__ = ('strings',)
+            __slots__ = ("strings",)
 
             def __init__(self, strings: Union[List[str], Tuple[str]]):
                 self.strings = strings
-                self.name = f'Filters.text({strings})'
+                self.name = f"Filters.text({strings})"
 
             def filter(self, message: Message) -> bool:
                 if message.text:
@@ -470,7 +470,7 @@ class Filters:
 
         def __call__(  # type: ignore[override]
             self, update: Union[Update, List[str], Tuple[str]]
-        ) -> Union[bool, '_TextStrings']:
+        ) -> Union[bool, "_TextStrings"]:
             if isinstance(update, Update):
                 return self.filter(update.effective_message)
             return self._TextStrings(update)
@@ -508,14 +508,14 @@ class Filters:
 
     class _Caption(MessageFilter):
         __slots__ = ()
-        name = 'Filters.caption'
+        name = "Filters.caption"
 
         class _CaptionStrings(MessageFilter):
-            __slots__ = ('strings',)
+            __slots__ = ("strings",)
 
             def __init__(self, strings: Union[List[str], Tuple[str]]):
                 self.strings = strings
-                self.name = f'Filters.caption({strings})'
+                self.name = f"Filters.caption({strings})"
 
             def filter(self, message: Message) -> bool:
                 if message.caption:
@@ -524,7 +524,7 @@ class Filters:
 
         def __call__(  # type: ignore[override]
             self, update: Union[Update, List[str], Tuple[str]]
-        ) -> Union[bool, '_CaptionStrings']:
+        ) -> Union[bool, "_CaptionStrings"]:
             if isinstance(update, Update):
                 return self.filter(update.effective_message)
             return self._CaptionStrings(update)
@@ -546,14 +546,14 @@ class Filters:
 
     class _Command(MessageFilter):
         __slots__ = ()
-        name = 'Filters.command'
+        name = "Filters.command"
 
         class _CommandOnlyStart(MessageFilter):
-            __slots__ = ('only_start',)
+            __slots__ = ("only_start",)
 
             def __init__(self, only_start: bool):
                 self.only_start = only_start
-                self.name = f'Filters.command({only_start})'
+                self.name = f"Filters.command({only_start})"
 
             def filter(self, message: Message) -> bool:
                 return bool(
@@ -563,7 +563,7 @@ class Filters:
 
         def __call__(  # type: ignore[override]
             self, update: Union[bool, Update]
-        ) -> Union[bool, '_CommandOnlyStart']:
+        ) -> Union[bool, "_CommandOnlyStart"]:
             if isinstance(update, Update):
                 return self.filter(update.effective_message)
             return self._CommandOnlyStart(update)
@@ -623,7 +623,7 @@ class Filters:
             pattern (:obj:`str` | :obj:`Pattern`): The regex pattern.
         """
 
-        __slots__ = ('pattern',)
+        __slots__ = ("pattern",)
         data_filter = True
 
         def __init__(self, pattern: Union[str, Pattern]):
@@ -631,14 +631,14 @@ class Filters:
                 pattern = re.compile(pattern)
             pattern = cast(Pattern, pattern)
             self.pattern: Pattern = pattern
-            self.name = f'Filters.regex({self.pattern})'
+            self.name = f"Filters.regex({self.pattern})"
 
         def filter(self, message: Message) -> Optional[Dict[str, List[Match]]]:
             """"""  # remove method from docs
             if message.text:
                 match = self.pattern.search(message.text)
                 if match:
-                    return {'matches': [match]}
+                    return {"matches": [match]}
             return {}
 
     class caption_regex(MessageFilter):
@@ -659,7 +659,7 @@ class Filters:
             pattern (:obj:`str` | :obj:`Pattern`): The regex pattern.
         """
 
-        __slots__ = ('pattern',)
+        __slots__ = ("pattern",)
         data_filter = True
 
         def __init__(self, pattern: Union[str, Pattern]):
@@ -667,19 +667,19 @@ class Filters:
                 pattern = re.compile(pattern)
             pattern = cast(Pattern, pattern)
             self.pattern: Pattern = pattern
-            self.name = f'Filters.caption_regex({self.pattern})'
+            self.name = f"Filters.caption_regex({self.pattern})"
 
         def filter(self, message: Message) -> Optional[Dict[str, List[Match]]]:
             """"""  # remove method from docs
             if message.caption:
                 match = self.pattern.search(message.caption)
                 if match:
-                    return {'matches': [match]}
+                    return {"matches": [match]}
             return {}
 
     class _Reply(MessageFilter):
         __slots__ = ()
-        name = 'Filters.reply'
+        name = "Filters.reply"
 
         def filter(self, message: Message) -> bool:
             return bool(message.reply_to_message)
@@ -689,7 +689,7 @@ class Filters:
 
     class _Audio(MessageFilter):
         __slots__ = ()
-        name = 'Filters.audio'
+        name = "Filters.audio"
 
         def filter(self, message: Message) -> bool:
             return bool(message.audio)
@@ -699,7 +699,7 @@ class Filters:
 
     class _Document(MessageFilter):
         __slots__ = ()
-        name = 'Filters.document'
+        name = "Filters.document"
 
         class category(MessageFilter):
             """Filters documents by their category in the mime-type attribute.
@@ -715,7 +715,7 @@ class Filters:
                 of audio sent as file, for example 'audio/mpeg' or 'audio/x-wav'.
             """
 
-            __slots__ = ('_category',)
+            __slots__ = ("_category",)
 
             def __init__(self, category: Optional[str]):
                 """Initialize the category you want to filter
@@ -732,11 +732,11 @@ class Filters:
                     return message.document.mime_type.startswith(self._category)
                 return False
 
-        application = category('application/')
-        audio = category('audio/')
-        image = category('image/')
-        video = category('video/')
-        text = category('text/')
+        application = category("application/")
+        audio = category("audio/")
+        image = category("image/")
+        video = category("video/")
+        text = category("text/")
 
         class mime_type(MessageFilter):
             """This Filter filters documents by their mime-type attribute
@@ -751,7 +751,7 @@ class Filters:
                 ``Filters.document.mime_type('audio/mpeg')`` filters all audio in mp3 format.
             """
 
-            __slots__ = ('mimetype',)
+            __slots__ = ("mimetype",)
 
             def __init__(self, mimetype: Optional[str]):
                 self.mimetype = mimetype
@@ -763,21 +763,21 @@ class Filters:
                     return message.document.mime_type == self.mimetype
                 return False
 
-        apk = mime_type('application/vnd.android.package-archive')
-        doc = mime_type('application/msword')
-        docx = mime_type('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        exe = mime_type('application/x-ms-dos-executable')
-        gif = mime_type('video/mp4')
-        jpg = mime_type('image/jpeg')
-        mp3 = mime_type('audio/mpeg')
-        pdf = mime_type('application/pdf')
-        py = mime_type('text/x-python')
-        svg = mime_type('image/svg+xml')
-        txt = mime_type('text/plain')
-        targz = mime_type('application/x-compressed-tar')
-        wav = mime_type('audio/x-wav')
-        xml = mime_type('application/xml')
-        zip = mime_type('application/zip')
+        apk = mime_type("application/vnd.android.package-archive")
+        doc = mime_type("application/msword")
+        docx = mime_type("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        exe = mime_type("application/x-ms-dos-executable")
+        gif = mime_type("video/mp4")
+        jpg = mime_type("image/jpeg")
+        mp3 = mime_type("audio/mpeg")
+        pdf = mime_type("application/pdf")
+        py = mime_type("text/x-python")
+        svg = mime_type("image/svg+xml")
+        txt = mime_type("text/plain")
+        targz = mime_type("application/x-compressed-tar")
+        wav = mime_type("audio/x-wav")
+        xml = mime_type("application/xml")
+        zip = mime_type("application/zip")
 
         class file_extension(MessageFilter):
             """This filter filters documents by their file ending/extension.
@@ -805,7 +805,7 @@ class Filters:
                   filters files without a dot in the filename.
             """
 
-            __slots__ = ('_file_extension', 'is_case_sensitive')
+            __slots__ = ("_file_extension", "is_case_sensitive")
 
             def __init__(self, file_extension: Optional[str], case_sensitive: bool = False):
                 """Initialize the extension you want to filter.
@@ -926,7 +926,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Animation(MessageFilter):
         __slots__ = ()
-        name = 'Filters.animation'
+        name = "Filters.animation"
 
         def filter(self, message: Message) -> bool:
             return bool(message.animation)
@@ -936,7 +936,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Photo(MessageFilter):
         __slots__ = ()
-        name = 'Filters.photo'
+        name = "Filters.photo"
 
         def filter(self, message: Message) -> bool:
             return bool(message.photo)
@@ -946,7 +946,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Sticker(MessageFilter):
         __slots__ = ()
-        name = 'Filters.sticker'
+        name = "Filters.sticker"
 
         def filter(self, message: Message) -> bool:
             return bool(message.sticker)
@@ -956,7 +956,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Video(MessageFilter):
         __slots__ = ()
-        name = 'Filters.video'
+        name = "Filters.video"
 
         def filter(self, message: Message) -> bool:
             return bool(message.video)
@@ -966,7 +966,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Voice(MessageFilter):
         __slots__ = ()
-        name = 'Filters.voice'
+        name = "Filters.voice"
 
         def filter(self, message: Message) -> bool:
             return bool(message.voice)
@@ -976,7 +976,7 @@ officedocument.wordprocessingml.document")``.
 
     class _VideoNote(MessageFilter):
         __slots__ = ()
-        name = 'Filters.video_note'
+        name = "Filters.video_note"
 
         def filter(self, message: Message) -> bool:
             return bool(message.video_note)
@@ -986,7 +986,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Contact(MessageFilter):
         __slots__ = ()
-        name = 'Filters.contact'
+        name = "Filters.contact"
 
         def filter(self, message: Message) -> bool:
             return bool(message.contact)
@@ -996,7 +996,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Location(MessageFilter):
         __slots__ = ()
-        name = 'Filters.location'
+        name = "Filters.location"
 
         def filter(self, message: Message) -> bool:
             return bool(message.location)
@@ -1006,7 +1006,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Venue(MessageFilter):
         __slots__ = ()
-        name = 'Filters.venue'
+        name = "Filters.venue"
 
         def filter(self, message: Message) -> bool:
             return bool(message.venue)
@@ -1027,7 +1027,7 @@ officedocument.wordprocessingml.document")``.
 
         class _NewChatMembers(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.new_chat_members'
+            name = "Filters.status_update.new_chat_members"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.new_chat_members)
@@ -1037,7 +1037,7 @@ officedocument.wordprocessingml.document")``.
 
         class _LeftChatMember(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.left_chat_member'
+            name = "Filters.status_update.left_chat_member"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.left_chat_member)
@@ -1047,7 +1047,7 @@ officedocument.wordprocessingml.document")``.
 
         class _NewChatTitle(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.new_chat_title'
+            name = "Filters.status_update.new_chat_title"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.new_chat_title)
@@ -1057,7 +1057,7 @@ officedocument.wordprocessingml.document")``.
 
         class _NewChatPhoto(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.new_chat_photo'
+            name = "Filters.status_update.new_chat_photo"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.new_chat_photo)
@@ -1067,7 +1067,7 @@ officedocument.wordprocessingml.document")``.
 
         class _DeleteChatPhoto(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.delete_chat_photo'
+            name = "Filters.status_update.delete_chat_photo"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.delete_chat_photo)
@@ -1077,7 +1077,7 @@ officedocument.wordprocessingml.document")``.
 
         class _ChatCreated(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.chat_created'
+            name = "Filters.status_update.chat_created"
 
             def filter(self, message: Message) -> bool:
                 return bool(
@@ -1093,7 +1093,7 @@ officedocument.wordprocessingml.document")``.
 
         class _MessageAutoDeleteTimerChanged(MessageFilter):
             __slots__ = ()
-            name = 'MessageAutoDeleteTimerChanged'
+            name = "MessageAutoDeleteTimerChanged"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.message_auto_delete_timer_changed)
@@ -1103,7 +1103,7 @@ officedocument.wordprocessingml.document")``.
 
         class _Migrate(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.migrate'
+            name = "Filters.status_update.migrate"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.migrate_from_chat_id or message.migrate_to_chat_id)
@@ -1114,7 +1114,7 @@ officedocument.wordprocessingml.document")``.
 
         class _PinnedMessage(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.pinned_message'
+            name = "Filters.status_update.pinned_message"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.pinned_message)
@@ -1124,7 +1124,7 @@ officedocument.wordprocessingml.document")``.
 
         class _ConnectedWebsite(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.connected_website'
+            name = "Filters.status_update.connected_website"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.connected_website)
@@ -1134,7 +1134,7 @@ officedocument.wordprocessingml.document")``.
 
         class _ProximityAlertTriggered(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.proximity_alert_triggered'
+            name = "Filters.status_update.proximity_alert_triggered"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.proximity_alert_triggered)
@@ -1144,7 +1144,7 @@ officedocument.wordprocessingml.document")``.
 
         class _VoiceChatScheduled(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.voice_chat_scheduled'
+            name = "Filters.status_update.voice_chat_scheduled"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.voice_chat_scheduled)
@@ -1154,7 +1154,7 @@ officedocument.wordprocessingml.document")``.
 
         class _VoiceChatStarted(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.voice_chat_started'
+            name = "Filters.status_update.voice_chat_started"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.voice_chat_started)
@@ -1164,7 +1164,7 @@ officedocument.wordprocessingml.document")``.
 
         class _VoiceChatEnded(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.voice_chat_ended'
+            name = "Filters.status_update.voice_chat_ended"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.voice_chat_ended)
@@ -1174,7 +1174,7 @@ officedocument.wordprocessingml.document")``.
 
         class _VoiceChatParticipantsInvited(MessageFilter):
             __slots__ = ()
-            name = 'Filters.status_update.voice_chat_participants_invited'
+            name = "Filters.status_update.voice_chat_participants_invited"
 
             def filter(self, message: Message) -> bool:
                 return bool(message.voice_chat_participants_invited)
@@ -1182,7 +1182,7 @@ officedocument.wordprocessingml.document")``.
         voice_chat_participants_invited = _VoiceChatParticipantsInvited()
         """Messages that contain :attr:`telegram.Message.voice_chat_participants_invited`."""
 
-        name = 'Filters.status_update'
+        name = "Filters.status_update"
 
         def filter(self, message: Update) -> bool:
             return bool(
@@ -1259,7 +1259,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Forwarded(MessageFilter):
         __slots__ = ()
-        name = 'Filters.forwarded'
+        name = "Filters.forwarded"
 
         def filter(self, message: Message) -> bool:
             return bool(message.forward_date)
@@ -1269,7 +1269,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Game(MessageFilter):
         __slots__ = ()
-        name = 'Filters.game'
+        name = "Filters.game"
 
         def filter(self, message: Message) -> bool:
             return bool(message.game)
@@ -1291,11 +1291,11 @@ officedocument.wordprocessingml.document")``.
 
         """
 
-        __slots__ = ('entity_type',)
+        __slots__ = ("entity_type",)
 
         def __init__(self, entity_type: str):
             self.entity_type = entity_type
-            self.name = f'Filters.entity({self.entity_type})'
+            self.name = f"Filters.entity({self.entity_type})"
 
         def filter(self, message: Message) -> bool:
             """"""  # remove method from docs
@@ -1315,11 +1315,11 @@ officedocument.wordprocessingml.document")``.
 
         """
 
-        __slots__ = ('entity_type',)
+        __slots__ = ("entity_type",)
 
         def __init__(self, entity_type: str):
             self.entity_type = entity_type
-            self.name = f'Filters.caption_entity({self.entity_type})'
+            self.name = f"Filters.caption_entity({self.entity_type})"
 
         def filter(self, message: Message) -> bool:
             """"""  # remove method from docs
@@ -1327,11 +1327,11 @@ officedocument.wordprocessingml.document")``.
 
     class _Private(MessageFilter):
         __slots__ = ()
-        name = 'Filters.private'
+        name = "Filters.private"
 
         def filter(self, message: Message) -> bool:
             warnings.warn(
-                'Filters.private is deprecated. Use Filters.chat_type.private instead.',
+                "Filters.private is deprecated. Use Filters.chat_type.private instead.",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -1348,11 +1348,11 @@ officedocument.wordprocessingml.document")``.
 
     class _Group(MessageFilter):
         __slots__ = ()
-        name = 'Filters.group'
+        name = "Filters.group"
 
         def filter(self, message: Message) -> bool:
             warnings.warn(
-                'Filters.group is deprecated. Use Filters.chat_type.groups instead.',
+                "Filters.group is deprecated. Use Filters.chat_type.groups instead.",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -1369,11 +1369,11 @@ officedocument.wordprocessingml.document")``.
 
     class _ChatType(MessageFilter):
         __slots__ = ()
-        name = 'Filters.chat_type'
+        name = "Filters.chat_type"
 
         class _Channel(MessageFilter):
             __slots__ = ()
-            name = 'Filters.chat_type.channel'
+            name = "Filters.chat_type.channel"
 
             def filter(self, message: Message) -> bool:
                 return message.chat.type == Chat.CHANNEL
@@ -1382,7 +1382,7 @@ officedocument.wordprocessingml.document")``.
 
         class _Group(MessageFilter):
             __slots__ = ()
-            name = 'Filters.chat_type.group'
+            name = "Filters.chat_type.group"
 
             def filter(self, message: Message) -> bool:
                 return message.chat.type == Chat.GROUP
@@ -1391,7 +1391,7 @@ officedocument.wordprocessingml.document")``.
 
         class _SuperGroup(MessageFilter):
             __slots__ = ()
-            name = 'Filters.chat_type.supergroup'
+            name = "Filters.chat_type.supergroup"
 
             def filter(self, message: Message) -> bool:
                 return message.chat.type == Chat.SUPERGROUP
@@ -1400,7 +1400,7 @@ officedocument.wordprocessingml.document")``.
 
         class _Groups(MessageFilter):
             __slots__ = ()
-            name = 'Filters.chat_type.groups'
+            name = "Filters.chat_type.groups"
 
             def filter(self, message: Message) -> bool:
                 return message.chat.type in [Chat.GROUP, Chat.SUPERGROUP]
@@ -1409,7 +1409,7 @@ officedocument.wordprocessingml.document")``.
 
         class _Private(MessageFilter):
             __slots__ = ()
-            name = 'Filters.chat_type.private'
+            name = "Filters.chat_type.private"
 
             def filter(self, message: Message) -> bool:
                 return message.chat.type == Chat.PRIVATE
@@ -1437,12 +1437,12 @@ officedocument.wordprocessingml.document")``.
 
     class _ChatUserBaseFilter(MessageFilter, ABC):
         __slots__ = (
-            'chat_id_name',
-            'username_name',
-            'allow_empty',
-            '__lock',
-            '_chat_ids',
-            '_usernames',
+            "chat_id_name",
+            "username_name",
+            "allow_empty",
+            "__lock",
+            "_chat_ids",
+            "_usernames",
         )
 
         def __init__(
@@ -1451,8 +1451,8 @@ officedocument.wordprocessingml.document")``.
             username: SLT[str] = None,
             allow_empty: bool = False,
         ):
-            self.chat_id_name = 'chat_id'
-            self.username_name = 'username'
+            self.chat_id_name = "chat_id"
+            self.username_name = "username"
             self.allow_empty = allow_empty
             self.__lock = Lock()
 
@@ -1479,8 +1479,8 @@ officedocument.wordprocessingml.document")``.
             if username is None:
                 return set()
             if isinstance(username, str):
-                return {username[1:] if username.startswith('@') else username}
-            return {chat[1:] if chat.startswith('@') else chat for chat in username}
+                return {username[1:] if username.startswith("@") else username}
+            return {chat[1:] if chat.startswith("@") else chat for chat in username}
 
         def _set_chat_ids(self, chat_id: SLT[int]) -> None:
             with self.__lock:
@@ -1576,13 +1576,13 @@ officedocument.wordprocessingml.document")``.
         @property
         def name(self) -> str:
             return (
-                f'Filters.{self.__class__.__name__}('
+                f"Filters.{self.__class__.__name__}("
                 f'{", ".join(str(s) for s in (self.usernames or self.chat_ids))})'
             )
 
         @name.setter
         def name(self, name: str) -> NoReturn:
-            raise RuntimeError(f'Cannot set name for Filters.{self.__class__.__name__}')
+            raise RuntimeError(f"Cannot set name for Filters.{self.__class__.__name__}")
 
     class user(_ChatUserBaseFilter):
         # pylint: disable=W0235
@@ -1630,7 +1630,7 @@ officedocument.wordprocessingml.document")``.
             allow_empty: bool = False,
         ):
             super().__init__(chat_id=user_id, username=username, allow_empty=allow_empty)
-            self.chat_id_name = 'user_id'
+            self.chat_id_name = "user_id"
 
         def get_chat_or_user(self, message: Message) -> Optional[User]:
             return message.from_user
@@ -1731,7 +1731,7 @@ officedocument.wordprocessingml.document")``.
             allow_empty: bool = False,
         ):
             super().__init__(chat_id=bot_id, username=username, allow_empty=allow_empty)
-            self.chat_id_name = 'bot_id'
+            self.chat_id_name = "bot_id"
 
         def get_chat_or_user(self, message: Message) -> Optional[User]:
             return message.via_bot
@@ -2091,7 +2091,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Invoice(MessageFilter):
         __slots__ = ()
-        name = 'Filters.invoice'
+        name = "Filters.invoice"
 
         def filter(self, message: Message) -> bool:
             return bool(message.invoice)
@@ -2101,7 +2101,7 @@ officedocument.wordprocessingml.document")``.
 
     class _SuccessfulPayment(MessageFilter):
         __slots__ = ()
-        name = 'Filters.successful_payment'
+        name = "Filters.successful_payment"
 
         def filter(self, message: Message) -> bool:
             return bool(message.successful_payment)
@@ -2111,7 +2111,7 @@ officedocument.wordprocessingml.document")``.
 
     class _PassportData(MessageFilter):
         __slots__ = ()
-        name = 'Filters.passport_data'
+        name = "Filters.passport_data"
 
         def filter(self, message: Message) -> bool:
             return bool(message.passport_data)
@@ -2121,7 +2121,7 @@ officedocument.wordprocessingml.document")``.
 
     class _Poll(MessageFilter):
         __slots__ = ()
-        name = 'Filters.poll'
+        name = "Filters.poll"
 
         def filter(self, message: Message) -> bool:
             return bool(message.poll)
@@ -2131,12 +2131,12 @@ officedocument.wordprocessingml.document")``.
 
     class _Dice(_DiceEmoji):
         __slots__ = ()
-        dice = _DiceEmoji('🎲', 'dice')
-        darts = _DiceEmoji('🎯', 'darts')
-        basketball = _DiceEmoji('🏀', 'basketball')
-        football = _DiceEmoji('⚽')
-        slot_machine = _DiceEmoji('🎰')
-        bowling = _DiceEmoji('🎳', 'bowling')
+        dice = _DiceEmoji("🎲", "dice")
+        darts = _DiceEmoji("🎯", "darts")
+        basketball = _DiceEmoji("🏀", "basketball")
+        football = _DiceEmoji("⚽")
+        slot_machine = _DiceEmoji("🎰")
+        bowling = _DiceEmoji("🎳", "bowling")
 
     dice = _Dice()
     """Dice Messages. If an integer or a list of integers is passed, it filters messages to only
@@ -2199,7 +2199,7 @@ officedocument.wordprocessingml.document")``.
 
         """
 
-        __slots__ = ('lang',)
+        __slots__ = ("lang",)
 
         def __init__(self, lang: SLT[str]):
             if isinstance(lang, str):
@@ -2208,7 +2208,7 @@ officedocument.wordprocessingml.document")``.
             else:
                 lang = cast(List[str], lang)
                 self.lang = lang
-            self.name = f'Filters.language({self.lang})'
+            self.name = f"Filters.language({self.lang})"
 
         def filter(self, message: Message) -> bool:
             """"""  # remove method from docs
@@ -2220,7 +2220,7 @@ officedocument.wordprocessingml.document")``.
     class _Attachment(MessageFilter):
         __slots__ = ()
 
-        name = 'Filters.attachment'
+        name = "Filters.attachment"
 
         def filter(self, message: Message) -> bool:
             return bool(message.effective_attachment)
@@ -2233,11 +2233,11 @@ officedocument.wordprocessingml.document")``.
 
     class _UpdateType(UpdateFilter):
         __slots__ = ()
-        name = 'Filters.update'
+        name = "Filters.update"
 
         class _Message(UpdateFilter):
             __slots__ = ()
-            name = 'Filters.update.message'
+            name = "Filters.update.message"
 
             def filter(self, update: Update) -> bool:
                 return update.message is not None
@@ -2246,7 +2246,7 @@ officedocument.wordprocessingml.document")``.
 
         class _EditedMessage(UpdateFilter):
             __slots__ = ()
-            name = 'Filters.update.edited_message'
+            name = "Filters.update.edited_message"
 
             def filter(self, update: Update) -> bool:
                 return update.edited_message is not None
@@ -2255,7 +2255,7 @@ officedocument.wordprocessingml.document")``.
 
         class _Messages(UpdateFilter):
             __slots__ = ()
-            name = 'Filters.update.messages'
+            name = "Filters.update.messages"
 
             def filter(self, update: Update) -> bool:
                 return update.message is not None or update.edited_message is not None
@@ -2264,7 +2264,7 @@ officedocument.wordprocessingml.document")``.
 
         class _ChannelPost(UpdateFilter):
             __slots__ = ()
-            name = 'Filters.update.channel_post'
+            name = "Filters.update.channel_post"
 
             def filter(self, update: Update) -> bool:
                 return update.channel_post is not None
@@ -2273,7 +2273,7 @@ officedocument.wordprocessingml.document")``.
 
         class _EditedChannelPost(UpdateFilter):
             __slots__ = ()
-            name = 'Filters.update.edited_channel_post'
+            name = "Filters.update.edited_channel_post"
 
             def filter(self, update: Update) -> bool:
                 return update.edited_channel_post is not None
@@ -2282,7 +2282,7 @@ officedocument.wordprocessingml.document")``.
 
         class _ChannelPosts(UpdateFilter):
             __slots__ = ()
-            name = 'Filters.update.channel_posts'
+            name = "Filters.update.channel_posts"
 
             def filter(self, update: Update) -> bool:
                 return update.channel_post is not None or update.edited_channel_post is not None

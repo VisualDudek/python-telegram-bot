@@ -46,7 +46,7 @@ class PassportElementError(TelegramObject):
     """
 
     # All subclasses of this class won't have _id_attrs in slots since it's added here.
-    __slots__ = ('message', 'source', 'type', '_id_attrs')
+    __slots__ = ("message", "source", "type", "_id_attrs")
 
     def __init__(self, source: str, type: str, message: str, **_kwargs: Any):
         # Required
@@ -85,11 +85,11 @@ class PassportElementErrorDataField(PassportElementError):
 
     """
 
-    __slots__ = ('data_hash', 'field_name')
+    __slots__ = ("data_hash", "field_name")
 
     def __init__(self, type: str, field_name: str, data_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('data', type, message)
+        super().__init__("data", type, message)
         self.field_name = field_name
         self.data_hash = data_hash
 
@@ -122,11 +122,11 @@ class PassportElementErrorFile(PassportElementError):
 
     """
 
-    __slots__ = ('file_hash',)
+    __slots__ = ("file_hash",)
 
     def __init__(self, type: str, file_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('file', type, message)
+        super().__init__("file", type, message)
         self.file_hash = file_hash
 
         self._id_attrs = (self.source, self.type, self.file_hash, self.message)
@@ -158,11 +158,11 @@ class PassportElementErrorFiles(PassportElementError):
 
     """
 
-    __slots__ = ('file_hashes',)
+    __slots__ = ("file_hashes",)
 
     def __init__(self, type: str, file_hashes: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('files', type, message)
+        super().__init__("files", type, message)
         self.file_hashes = file_hashes
 
         self._id_attrs = (self.source, self.type, self.message) + tuple(file_hashes)
@@ -194,11 +194,11 @@ class PassportElementErrorFrontSide(PassportElementError):
 
     """
 
-    __slots__ = ('file_hash',)
+    __slots__ = ("file_hash",)
 
     def __init__(self, type: str, file_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('front_side', type, message)
+        super().__init__("front_side", type, message)
         self.file_hash = file_hash
 
         self._id_attrs = (self.source, self.type, self.file_hash, self.message)
@@ -230,11 +230,11 @@ class PassportElementErrorReverseSide(PassportElementError):
 
     """
 
-    __slots__ = ('file_hash',)
+    __slots__ = ("file_hash",)
 
     def __init__(self, type: str, file_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('reverse_side', type, message)
+        super().__init__("reverse_side", type, message)
         self.file_hash = file_hash
 
         self._id_attrs = (self.source, self.type, self.file_hash, self.message)
@@ -264,11 +264,11 @@ class PassportElementErrorSelfie(PassportElementError):
 
     """
 
-    __slots__ = ('file_hash',)
+    __slots__ = ("file_hash",)
 
     def __init__(self, type: str, file_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('selfie', type, message)
+        super().__init__("selfie", type, message)
         self.file_hash = file_hash
 
         self._id_attrs = (self.source, self.type, self.file_hash, self.message)
@@ -302,11 +302,11 @@ class PassportElementErrorTranslationFile(PassportElementError):
 
     """
 
-    __slots__ = ('file_hash',)
+    __slots__ = ("file_hash",)
 
     def __init__(self, type: str, file_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('translation_file', type, message)
+        super().__init__("translation_file", type, message)
         self.file_hash = file_hash
 
         self._id_attrs = (self.source, self.type, self.file_hash, self.message)
@@ -340,11 +340,11 @@ class PassportElementErrorTranslationFiles(PassportElementError):
 
     """
 
-    __slots__ = ('file_hashes',)
+    __slots__ = ("file_hashes",)
 
     def __init__(self, type: str, file_hashes: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('translation_files', type, message)
+        super().__init__("translation_files", type, message)
         self.file_hashes = file_hashes
 
         self._id_attrs = (self.source, self.type, self.message) + tuple(file_hashes)
@@ -372,11 +372,11 @@ class PassportElementErrorUnspecified(PassportElementError):
 
     """
 
-    __slots__ = ('element_hash',)
+    __slots__ = ("element_hash",)
 
     def __init__(self, type: str, element_hash: str, message: str, **_kwargs: Any):
         # Required
-        super().__init__('unspecified', type, message)
+        super().__init__("unspecified", type, message)
         self.element_hash = element_hash
 
         self._id_attrs = (self.source, self.type, self.element_hash, self.message)

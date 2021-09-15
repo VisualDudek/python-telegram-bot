@@ -31,11 +31,11 @@ class TestTypeHandler:
     def test_slot_behaviour(self, mro_slots, recwarn):
         inst = TypeHandler(dict, self.callback_basic)
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -68,22 +68,22 @@ class TestTypeHandler:
         handler = TypeHandler(dict, self.callback_basic)
         dp.add_handler(handler)
 
-        assert handler.check_update({'a': 1, 'b': 2})
-        assert not handler.check_update('not a dict')
-        dp.process_update({'a': 1, 'b': 2})
+        assert handler.check_update({"a": 1, "b": 2})
+        assert not handler.check_update("not a dict")
+        dp.process_update({"a": 1, "b": 2})
         assert self.test_flag
 
     def test_strict(self):
         handler = TypeHandler(dict, self.callback_basic, strict=True)
-        o = OrderedDict({'a': 1, 'b': 2})
-        assert handler.check_update({'a': 1, 'b': 2})
+        o = OrderedDict({"a": 1, "b": 2})
+        assert handler.check_update({"a": 1, "b": 2})
         assert not handler.check_update(o)
 
     def test_pass_job_or_update_queue(self, dp):
         handler = TypeHandler(dict, self.callback_queue_1, pass_job_queue=True)
         dp.add_handler(handler)
 
-        dp.process_update({'a': 1, 'b': 2})
+        dp.process_update({"a": 1, "b": 2})
         assert self.test_flag
 
         dp.remove_handler(handler)
@@ -91,7 +91,7 @@ class TestTypeHandler:
         dp.add_handler(handler)
 
         self.test_flag = False
-        dp.process_update({'a': 1, 'b': 2})
+        dp.process_update({"a": 1, "b": 2})
         assert self.test_flag
 
         dp.remove_handler(handler)
@@ -101,12 +101,12 @@ class TestTypeHandler:
         dp.add_handler(handler)
 
         self.test_flag = False
-        dp.process_update({'a': 1, 'b': 2})
+        dp.process_update({"a": 1, "b": 2})
         assert self.test_flag
 
     def test_context(self, cdp):
         handler = TypeHandler(dict, self.callback_context)
         cdp.add_handler(handler)
 
-        cdp.process_update({'a': 1, 'b': 2})
+        cdp.process_update({"a": 1, "b": 2})
         assert self.test_flag

@@ -134,27 +134,27 @@ class Updater(Generic[CCT, UD, CD, BD]):
     """
 
     __slots__ = (
-        'persistence',
-        'dispatcher',
-        'user_sig_handler',
-        'bot',
-        'logger',
-        'update_queue',
-        'job_queue',
-        '__exception_event',
-        'last_update_id',
-        'running',
-        '_request',
-        'is_idle',
-        'httpd',
-        '__lock',
-        '__threads',
-        '__dict__',
+        "persistence",
+        "dispatcher",
+        "user_sig_handler",
+        "bot",
+        "logger",
+        "update_queue",
+        "job_queue",
+        "__exception_event",
+        "last_update_id",
+        "running",
+        "_request",
+        "is_idle",
+        "httpd",
+        "__lock",
+        "__threads",
+        "__dict__",
     )
 
     @overload
     def __init__(
-        self: 'Updater[CallbackContext, dict, dict, dict]',
+        self: "Updater[CallbackContext, dict, dict, dict]",
         token: str = None,
         base_url: str = None,
         workers: int = 4,
@@ -163,8 +163,8 @@ class Updater(Generic[CCT, UD, CD, BD]):
         private_key_password: bytes = None,
         user_sig_handler: Callable = None,
         request_kwargs: Dict[str, Any] = None,
-        persistence: 'BasePersistence' = None,  # pylint: disable=E0601
-        defaults: 'Defaults' = None,
+        persistence: "BasePersistence" = None,  # pylint: disable=E0601
+        defaults: "Defaults" = None,
         use_context: bool = True,
         base_file_url: str = None,
         arbitrary_callback_data: Union[DefaultValue, bool, int, None] = DEFAULT_FALSE,
@@ -173,7 +173,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
     @overload
     def __init__(
-        self: 'Updater[CCT, UD, CD, BD]',
+        self: "Updater[CCT, UD, CD, BD]",
         token: str = None,
         base_url: str = None,
         workers: int = 4,
@@ -182,8 +182,8 @@ class Updater(Generic[CCT, UD, CD, BD]):
         private_key_password: bytes = None,
         user_sig_handler: Callable = None,
         request_kwargs: Dict[str, Any] = None,
-        persistence: 'BasePersistence' = None,
-        defaults: 'Defaults' = None,
+        persistence: "BasePersistence" = None,
+        defaults: "Defaults" = None,
         use_context: bool = True,
         base_file_url: str = None,
         arbitrary_callback_data: Union[DefaultValue, bool, int, None] = DEFAULT_FALSE,
@@ -193,7 +193,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
     @overload
     def __init__(
-        self: 'Updater[CCT, UD, CD, BD]',
+        self: "Updater[CCT, UD, CD, BD]",
         user_sig_handler: Callable = None,
         dispatcher: Dispatcher[CCT, UD, CD, BD] = None,
     ):
@@ -209,8 +209,8 @@ class Updater(Generic[CCT, UD, CD, BD]):
         private_key_password: bytes = None,
         user_sig_handler: Callable = None,
         request_kwargs: Dict[str, Any] = None,
-        persistence: 'BasePersistence' = None,
-        defaults: 'Defaults' = None,
+        persistence: "BasePersistence" = None,
+        defaults: "Defaults" = None,
         use_context: bool = True,
         dispatcher=None,
         base_file_url: str = None,
@@ -220,36 +220,36 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
         if defaults and bot:
             warnings.warn(
-                'Passing defaults to an Updater has no effect when a Bot is passed '
-                'as well. Pass them to the Bot instead.',
+                "Passing defaults to an Updater has no effect when a Bot is passed "
+                "as well. Pass them to the Bot instead.",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
         if arbitrary_callback_data is not DEFAULT_FALSE and bot:
             warnings.warn(
-                'Passing arbitrary_callback_data to an Updater has no '
-                'effect when a Bot is passed as well. Pass them to the Bot instead.',
+                "Passing arbitrary_callback_data to an Updater has no "
+                "effect when a Bot is passed as well. Pass them to the Bot instead.",
                 stacklevel=2,
             )
 
         if dispatcher is None:
             if (token is None) and (bot is None):
-                raise ValueError('`token` or `bot` must be passed')
+                raise ValueError("`token` or `bot` must be passed")
             if (token is not None) and (bot is not None):
-                raise ValueError('`token` and `bot` are mutually exclusive')
+                raise ValueError("`token` and `bot` are mutually exclusive")
             if (private_key is not None) and (bot is not None):
-                raise ValueError('`bot` and `private_key` are mutually exclusive')
+                raise ValueError("`bot` and `private_key` are mutually exclusive")
         else:
             if bot is not None:
-                raise ValueError('`dispatcher` and `bot` are mutually exclusive')
+                raise ValueError("`dispatcher` and `bot` are mutually exclusive")
             if persistence is not None:
-                raise ValueError('`dispatcher` and `persistence` are mutually exclusive')
+                raise ValueError("`dispatcher` and `persistence` are mutually exclusive")
             if use_context != dispatcher.use_context:
-                raise ValueError('`dispatcher` and `use_context` are mutually exclusive')
+                raise ValueError("`dispatcher` and `use_context` are mutually exclusive")
             if context_types is not None:
-                raise ValueError('`dispatcher` and `context_types` are mutually exclusive')
+                raise ValueError("`dispatcher` and `context_types` are mutually exclusive")
             if workers is not None:
-                raise ValueError('`dispatcher` and `workers` are mutually exclusive')
+                raise ValueError("`dispatcher` and `workers` are mutually exclusive")
 
         self.logger = logging.getLogger(__name__)
         self._request = None
@@ -261,7 +261,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
                 self.bot = bot
                 if bot.request.con_pool_size < con_pool_size:
                     self.logger.warning(
-                        'Connection pool of Request object is smaller than optimal value (%s)',
+                        "Connection pool of Request object is smaller than optimal value (%s)",
                         con_pool_size,
                     )
             else:
@@ -273,8 +273,8 @@ class Updater(Generic[CCT, UD, CD, BD]):
                 # * 1 for main thread
                 if request_kwargs is None:
                     request_kwargs = {}
-                if 'con_pool_size' not in request_kwargs:
-                    request_kwargs['con_pool_size'] = con_pool_size
+                if "con_pool_size" not in request_kwargs:
+                    request_kwargs["con_pool_size"] = con_pool_size
                 self._request = Request(**request_kwargs)
                 self.bot = ExtBot(
                     token,  # type: ignore[arg-type]
@@ -311,7 +311,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
             self.bot = dispatcher.bot
             if self.bot.request.con_pool_size < con_pool_size:
                 self.logger.warning(
-                    'Connection pool of Request object is smaller than optimal value (%s)',
+                    "Connection pool of Request object is smaller than optimal value (%s)",
                     con_pool_size,
                 )
             self.update_queue = dispatcher.update_queue
@@ -329,7 +329,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
         self.__threads: List[Thread] = []
 
     def __setattr__(self, key: str, value: object) -> None:
-        if key.startswith('__'):
+        if key.startswith("__"):
             key = f"_{self.__class__.__name__}{key}"
         if issubclass(self.__class__, Updater) and self.__class__ is not Updater:
             object.__setattr__(self, key, value)
@@ -348,14 +348,14 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
     def _thread_wrapper(self, target: Callable, *args: object, **kwargs: object) -> None:
         thr_name = current_thread().name
-        self.logger.debug('%s - started', thr_name)
+        self.logger.debug("%s - started", thr_name)
         try:
             target(*args, **kwargs)
         except Exception:
             self.__exception_event.set()
-            self.logger.exception('unhandled exception in %s', thr_name)
+            self.logger.exception("unhandled exception in %s", thr_name)
             raise
-        self.logger.debug('%s - ended', thr_name)
+        self.logger.debug("%s - ended", thr_name)
 
     def start_polling(
         self,
@@ -399,12 +399,12 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
         """
         if (clean is not None) and (drop_pending_updates is not None):
-            raise TypeError('`clean` and `drop_pending_updates` are mutually exclusive.')
+            raise TypeError("`clean` and `drop_pending_updates` are mutually exclusive.")
 
         if clean is not None:
             warnings.warn(
-                'The argument `clean` of `start_polling` is deprecated. Please use '
-                '`drop_pending_updates` instead.',
+                "The argument `clean` of `start_polling` is deprecated. Please use "
+                "`drop_pending_updates` instead.",
                 category=TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -432,7 +432,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
                     ready=polling_ready,
                 )
 
-                self.logger.debug('Waiting for Dispatcher and polling to start')
+                self.logger.debug("Waiting for Dispatcher and polling to start")
                 dispatcher_ready.wait()
                 polling_ready.wait()
 
@@ -442,9 +442,9 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
     def start_webhook(
         self,
-        listen: str = '127.0.0.1',
+        listen: str = "127.0.0.1",
         port: int = 80,
-        url_path: str = '',
+        url_path: str = "",
         cert: str = None,
         key: str = None,
         clean: bool = None,
@@ -513,20 +513,20 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
         """
         if (clean is not None) and (drop_pending_updates is not None):
-            raise TypeError('`clean` and `drop_pending_updates` are mutually exclusive.')
+            raise TypeError("`clean` and `drop_pending_updates` are mutually exclusive.")
 
         if clean is not None:
             warnings.warn(
-                'The argument `clean` of `start_webhook` is deprecated. Please use '
-                '`drop_pending_updates` instead.',
+                "The argument `clean` of `start_webhook` is deprecated. Please use "
+                "`drop_pending_updates` instead.",
                 category=TelegramDeprecationWarning,
                 stacklevel=2,
             )
 
         if force_event_loop is not None:
             warnings.warn(
-                'The argument `force_event_loop` of `start_webhook` is deprecated and no longer '
-                'has any effect.',
+                "The argument `force_event_loop` of `start_webhook` is deprecated and no longer "
+                "has any effect.",
                 category=TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -559,7 +559,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
                     max_connections=max_connections,
                 )
 
-                self.logger.debug('Waiting for Dispatcher and Webhook to start')
+                self.logger.debug("Waiting for Dispatcher and Webhook to start")
                 webhook_ready.wait()
                 dispatcher_ready.wait()
 
@@ -582,16 +582,16 @@ class Updater(Generic[CCT, UD, CD, BD]):
         # updates from Telegram and inserts them in the update queue of the
         # Dispatcher.
 
-        self.logger.debug('Updater thread started (polling)')
+        self.logger.debug("Updater thread started (polling)")
 
         self._bootstrap(
             bootstrap_retries,
             drop_pending_updates=drop_pending_updates,
-            webhook_url='',
+            webhook_url="",
             allowed_updates=None,
         )
 
-        self.logger.debug('Bootstrap done')
+        self.logger.debug("Bootstrap done")
 
         def polling_action_cb():
             updates = self.bot.get_updates(
@@ -603,7 +603,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
             if updates:
                 if not self.running:
-                    self.logger.debug('Updates ignored and will be pulled again on restart')
+                    self.logger.debug("Updates ignored and will be pulled again on restart")
                 else:
                     for update in updates:
                         self.update_queue.put(update)
@@ -620,7 +620,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
             ready.set()
 
         self._network_loop_retry(
-            polling_action_cb, polling_onerr_cb, 'getting Updates', poll_interval
+            polling_action_cb, polling_onerr_cb, "getting Updates", poll_interval
         )
 
     @no_type_check
@@ -639,24 +639,24 @@ class Updater(Generic[CCT, UD, CD, BD]):
                 `action_cb`.
 
         """
-        self.logger.debug('Start network loop retry %s', description)
+        self.logger.debug("Start network loop retry %s", description)
         cur_interval = interval
         while self.running:
             try:
                 if not action_cb():
                     break
             except RetryAfter as exc:
-                self.logger.info('%s', exc)
+                self.logger.info("%s", exc)
                 cur_interval = 0.5 + exc.retry_after
             except TimedOut as toe:
-                self.logger.debug('Timed out %s: %s', description, toe)
+                self.logger.debug("Timed out %s: %s", description, toe)
                 # If failure is due to timeout, we should retry asap.
                 cur_interval = 0
             except InvalidToken as pex:
-                self.logger.error('Invalid token; aborting')
+                self.logger.error("Invalid token; aborting")
                 raise pex
             except TelegramError as telegram_exc:
-                self.logger.error('Error while %s: %s', description, telegram_exc)
+                self.logger.error("Error while %s: %s", description, telegram_exc)
                 onerr_cb(telegram_exc)
                 cur_interval = self._increase_poll_interval(cur_interval)
             else:
@@ -692,15 +692,15 @@ class Updater(Generic[CCT, UD, CD, BD]):
         ip_address=None,
         max_connections: int = 40,
     ):
-        self.logger.debug('Updater thread started (webhook)')
+        self.logger.debug("Updater thread started (webhook)")
 
         # Note that we only use the SSL certificate for the WebhookServer, if the key is also
         # present. This is because the WebhookServer may not actually be in charge of performing
         # the SSL handshake, e.g. in case a reverse proxy is used
         use_ssl = cert is not None and key is not None
 
-        if not url_path.startswith('/'):
-            url_path = f'/{url_path}'
+        if not url_path.startswith("/"):
+            url_path = f"/{url_path}"
 
         # Create Tornado app instance
         app = WebhookAppClass(url_path, self.bot, self.update_queue)
@@ -712,7 +712,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
                 ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
                 ssl_ctx.load_cert_chain(cert, key)
             except ssl.SSLError as exc:
-                raise TelegramError('Invalid SSL Certificate') from exc
+                raise TelegramError("Invalid SSL Certificate") from exc
         else:
             ssl_ctx = None
 
@@ -723,7 +723,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
             webhook_url = self._gen_webhook_url(listen, port, url_path)
 
         # We pass along the cert to the webhook if present.
-        cert_file = open(cert, 'rb') if cert is not None else None
+        cert_file = open(cert, "rb") if cert is not None else None
         self._bootstrap(
             max_retries=bootstrap_retries,
             drop_pending_updates=drop_pending_updates,
@@ -740,7 +740,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
 
     @staticmethod
     def _gen_webhook_url(listen: str, port: int, url_path: str) -> str:
-        return f'https://{listen}:{port}{url_path}'
+        return f"https://{listen}:{port}{url_path}"
 
     @no_type_check
     def _bootstrap(
@@ -757,16 +757,16 @@ class Updater(Generic[CCT, UD, CD, BD]):
         retries = [0]
 
         def bootstrap_del_webhook():
-            self.logger.debug('Deleting webhook')
+            self.logger.debug("Deleting webhook")
             if drop_pending_updates:
-                self.logger.debug('Dropping pending updates from Telegram server')
+                self.logger.debug("Dropping pending updates from Telegram server")
             self.bot.delete_webhook(drop_pending_updates=drop_pending_updates)
             return False
 
         def bootstrap_set_webhook():
-            self.logger.debug('Setting webhook')
+            self.logger.debug("Setting webhook")
             if drop_pending_updates:
-                self.logger.debug('Dropping pending updates from Telegram server')
+                self.logger.debug("Dropping pending updates from Telegram server")
             self.bot.set_webhook(
                 url=webhook_url,
                 certificate=cert,
@@ -781,10 +781,10 @@ class Updater(Generic[CCT, UD, CD, BD]):
             if not isinstance(exc, Unauthorized) and (max_retries < 0 or retries[0] < max_retries):
                 retries[0] += 1
                 self.logger.warning(
-                    'Failed bootstrap phase; try=%s max_retries=%s', retries[0], max_retries
+                    "Failed bootstrap phase; try=%s max_retries=%s", retries[0], max_retries
                 )
             else:
-                self.logger.error('Failed bootstrap phase after %s retries (%s)', retries[0], exc)
+                self.logger.error("Failed bootstrap phase after %s retries (%s)", retries[0], exc)
                 raise exc
 
         # Dropping pending updates from TG can be efficiently done with the drop_pending_updates
@@ -795,7 +795,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
             self._network_loop_retry(
                 bootstrap_del_webhook,
                 bootstrap_onerr_cb,
-                'bootstrap del webhook',
+                "bootstrap del webhook",
                 bootstrap_interval,
             )
             retries[0] = 0
@@ -806,7 +806,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
             self._network_loop_retry(
                 bootstrap_set_webhook,
                 bootstrap_onerr_cb,
-                'bootstrap set webhook',
+                "bootstrap set webhook",
                 bootstrap_interval,
             )
 
@@ -815,7 +815,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
         self.job_queue.stop()
         with self.__lock:
             if self.running or self.dispatcher.has_running_threads:
-                self.logger.debug('Stopping Updater and Dispatcher...')
+                self.logger.debug("Stopping Updater and Dispatcher...")
 
                 self.running = False
 
@@ -831,24 +831,24 @@ class Updater(Generic[CCT, UD, CD, BD]):
     def _stop_httpd(self) -> None:
         if self.httpd:
             self.logger.debug(
-                'Waiting for current webhook connection to be '
-                'closed... Send a Telegram message to the bot to exit '
-                'immediately.'
+                "Waiting for current webhook connection to be "
+                "closed... Send a Telegram message to the bot to exit "
+                "immediately."
             )
             self.httpd.shutdown()
             self.httpd = None
 
     @no_type_check
     def _stop_dispatcher(self) -> None:
-        self.logger.debug('Requesting Dispatcher to stop...')
+        self.logger.debug("Requesting Dispatcher to stop...")
         self.dispatcher.stop()
 
     @no_type_check
     def _join_threads(self) -> None:
         for thr in self.__threads:
-            self.logger.debug('Waiting for %s thread to end', thr.name)
+            self.logger.debug("Waiting for %s thread to end", thr.name)
             thr.join()
-            self.logger.debug('%s thread has ended', thr.name)
+            self.logger.debug("%s thread has ended", thr.name)
         self.__threads = []
 
     @no_type_check
@@ -856,7 +856,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
         self.is_idle = False
         if self.running:
             self.logger.info(
-                'Received signal %s (%s), stopping...', signum, get_signal_name(signum)
+                "Received signal %s (%s), stopping...", signum, get_signal_name(signum)
             )
             if self.persistence:
                 # Update user_data, chat_data and bot_data before flushing
@@ -866,7 +866,7 @@ class Updater(Generic[CCT, UD, CD, BD]):
             if self.user_sig_handler:
                 self.user_sig_handler(signum, frame)
         else:
-            self.logger.warning('Exiting immediately!')
+            self.logger.warning("Exiting immediately!")
             # pylint: disable=C0415,W0212
             import os
 

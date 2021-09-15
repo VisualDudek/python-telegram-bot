@@ -34,41 +34,41 @@ from telegram import (
 )
 from telegram.ext import PollAnswerHandler, CallbackContext, JobQueue
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'message': message},
-    {'edited_message': message},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat', message=message)},
-    {'channel_post': message},
-    {'edited_channel_post': message},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'pre_checkout_query': PreCheckoutQuery('id', User(1, '', False), '', 0, '')},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat')},
+    {"message": message},
+    {"edited_message": message},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat", message=message)},
+    {"channel_post": message},
+    {"edited_channel_post": message},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"pre_checkout_query": PreCheckoutQuery("id", User(1, "", False), "", 0, "")},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat")},
 ]
 
 ids = (
-    'message',
-    'edited_message',
-    'callback_query',
-    'channel_post',
-    'edited_channel_post',
-    'chosen_inline_result',
-    'shipping_query',
-    'pre_checkout_query',
-    'callback_query_without_message',
+    "message",
+    "edited_message",
+    "callback_query",
+    "channel_post",
+    "edited_channel_post",
+    "chosen_inline_result",
+    "shipping_query",
+    "pre_checkout_query",
+    "callback_query_without_message",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=2, **request.param)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def poll_answer(bot):
-    return Update(0, poll_answer=PollAnswer(1, User(2, 'test user', False), [0, 1]))
+    return Update(0, poll_answer=PollAnswer(1, User(2, "test user", False), [0, 1]))
 
 
 class TestPollAnswerHandler:
@@ -77,11 +77,11 @@ class TestPollAnswerHandler:
     def test_slot_behaviour(self, recwarn, mro_slots):
         handler = PollAnswerHandler(self.callback_basic)
         for attr in handler.__slots__:
-            assert getattr(handler, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(handler, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not handler.__dict__, f"got missing slot(s): {handler.__dict__}"
         assert len(mro_slots(handler)) == len(set(mro_slots(handler))), "duplicate slot"
-        handler.custom, handler.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        handler.custom, handler.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):

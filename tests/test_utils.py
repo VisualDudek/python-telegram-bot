@@ -24,7 +24,7 @@ class TestUtils:
 
         assert len(recwarn) == 1
         assert str(recwarn[0].message) == (
-            'telegram.utils.promise is deprecated. Please use telegram.ext.utils.promise instead.'
+            "telegram.utils.promise is deprecated. Please use telegram.ext.utils.promise instead."
         )
 
     def test_webhookhandler_deprecation(self, recwarn):
@@ -32,6 +32,6 @@ class TestUtils:
 
         assert len(recwarn) == 1
         assert str(recwarn[0].message) == (
-            'telegram.utils.webhookhandler is deprecated. Please use '
-            'telegram.ext.utils.webhookhandler instead.'
+            "telegram.utils.webhookhandler is deprecated. Please use "
+            "telegram.ext.utils.webhookhandler instead."
         )

@@ -40,7 +40,7 @@ from .utils.types import CCT
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
+RT = TypeVar("RT")
 
 
 class CallbackQueryHandler(Handler[Update, CCT]):
@@ -146,7 +146,7 @@ class CallbackQueryHandler(Handler[Update, CCT]):
 
     """
 
-    __slots__ = ('pattern', 'pass_groups', 'pass_groupdict')
+    __slots__ = ("pattern", "pass_groups", "pass_groupdict")
 
     def __init__(
         self,
@@ -204,7 +204,7 @@ class CallbackQueryHandler(Handler[Update, CCT]):
 
     def collect_optional_args(
         self,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         update: Update = None,
         check_result: Union[bool, Match] = None,
     ) -> Dict[str, object]:
@@ -216,16 +216,16 @@ class CallbackQueryHandler(Handler[Update, CCT]):
         if self.pattern and not callable(self.pattern):
             check_result = cast(Match, check_result)
             if self.pass_groups:
-                optional_args['groups'] = check_result.groups()
+                optional_args["groups"] = check_result.groups()
             if self.pass_groupdict:
-                optional_args['groupdict'] = check_result.groupdict()
+                optional_args["groupdict"] = check_result.groupdict()
         return optional_args
 
     def collect_additional_context(
         self,
         context: CCT,
         update: Update,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: Union[bool, Match],
     ) -> None:
         """Add the result of ``re.match(pattern, update.callback_query.data)`` to

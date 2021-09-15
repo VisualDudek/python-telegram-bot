@@ -265,29 +265,29 @@ class ChatMember(TelegramObject):
     """
 
     __slots__ = (
-        'is_member',
-        'can_restrict_members',
-        'can_delete_messages',
-        'custom_title',
-        'can_be_edited',
-        'can_post_messages',
-        'can_send_messages',
-        'can_edit_messages',
-        'can_send_media_messages',
-        'is_anonymous',
-        'can_add_web_page_previews',
-        'can_send_other_messages',
-        'can_invite_users',
-        'can_send_polls',
-        'user',
-        'can_promote_members',
-        'status',
-        'can_change_info',
-        'can_pin_messages',
-        'can_manage_chat',
-        'can_manage_voice_chats',
-        'until_date',
-        '_id_attrs',
+        "is_member",
+        "can_restrict_members",
+        "can_delete_messages",
+        "custom_title",
+        "can_be_edited",
+        "can_post_messages",
+        "can_send_messages",
+        "can_edit_messages",
+        "can_send_media_messages",
+        "is_anonymous",
+        "can_add_web_page_previews",
+        "can_send_other_messages",
+        "can_invite_users",
+        "can_send_polls",
+        "user",
+        "can_promote_members",
+        "status",
+        "can_change_info",
+        "can_pin_messages",
+        "can_manage_chat",
+        "can_manage_voice_chats",
+        "until_date",
+        "_id_attrs",
     )
 
     ADMINISTRATOR: ClassVar[str] = constants.CHATMEMBER_ADMINISTRATOR
@@ -358,17 +358,17 @@ class ChatMember(TelegramObject):
         self._id_attrs = (self.user, self.status)
 
     @classmethod
-    def de_json(cls, data: Optional[JSONDict], bot: 'Bot') -> Optional['ChatMember']:
+    def de_json(cls, data: Optional[JSONDict], bot: "Bot") -> Optional["ChatMember"]:
         """See :meth:`telegram.TelegramObject.de_json`."""
         data = cls._parse_data(data)
 
         if not data:
             return None
 
-        data['user'] = User.de_json(data.get('user'), bot)
-        data['until_date'] = from_timestamp(data.get('until_date', None))
+        data["user"] = User.de_json(data.get("user"), bot)
+        data["until_date"] = from_timestamp(data.get("until_date", None))
 
-        _class_mapping: Dict[str, Type['ChatMember']] = {
+        _class_mapping: Dict[str, Type["ChatMember"]] = {
             cls.CREATOR: ChatMemberOwner,
             cls.ADMINISTRATOR: ChatMemberAdministrator,
             cls.MEMBER: ChatMemberMember,
@@ -378,14 +378,14 @@ class ChatMember(TelegramObject):
         }
 
         if cls is ChatMember:
-            return _class_mapping.get(data['status'], cls)(**data, bot=bot)
+            return _class_mapping.get(data["status"], cls)(**data, bot=bot)
         return cls(**data)
 
     def to_dict(self) -> JSONDict:
         """See :meth:`telegram.TelegramObject.to_dict`."""
         data = super().to_dict()
 
-        data['until_date'] = to_timestamp(self.until_date)
+        data["until_date"] = to_timestamp(self.until_date)
 
         return data
 

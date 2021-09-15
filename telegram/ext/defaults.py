@@ -58,16 +58,16 @@ class Defaults:
     """
 
     __slots__ = (
-        '_timeout',
-        '_tzinfo',
-        '_disable_web_page_preview',
-        '_run_async',
-        '_quote',
-        '_disable_notification',
-        '_allow_sending_without_reply',
-        '_parse_mode',
-        '_api_defaults',
-        '__dict__',
+        "_timeout",
+        "_tzinfo",
+        "_disable_web_page_preview",
+        "_run_async",
+        "_quote",
+        "_disable_notification",
+        "_allow_sending_without_reply",
+        "_parse_mode",
+        "_api_defaults",
+        "__dict__",
     )
 
     def __init__(
@@ -95,18 +95,18 @@ class Defaults:
         # Gather all defaults that actually have a default value
         self._api_defaults = {}
         for kwarg in (
-            'parse_mode',
-            'explanation_parse_mode',
-            'disable_notification',
-            'disable_web_page_preview',
-            'allow_sending_without_reply',
+            "parse_mode",
+            "explanation_parse_mode",
+            "disable_notification",
+            "disable_web_page_preview",
+            "allow_sending_without_reply",
         ):
             value = getattr(self, kwarg)
             if value not in [None, DEFAULT_NONE]:
                 self._api_defaults[kwarg] = value
         # Special casing, as None is a valid default value
         if self._timeout != DEFAULT_NONE:
-            self._api_defaults['timeout'] = self._timeout
+            self._api_defaults["timeout"] = self._timeout
 
     def __setattr__(self, key: str, value: object) -> None:
         set_new_attribute_deprecated(self, key, value)

@@ -25,28 +25,28 @@ import inspect
 
 
 excluded = {
-    'telegram.error',
-    '_ConversationTimeoutContext',
-    'DispatcherHandlerStop',
-    'Days',
-    'telegram.deprecate',
-    'TelegramDecryptionError',
-    'ContextTypes',
-    'CallbackDataCache',
-    'InvalidCallbackData',
-    '_KeyboardData',
+    "telegram.error",
+    "_ConversationTimeoutContext",
+    "DispatcherHandlerStop",
+    "Days",
+    "telegram.deprecate",
+    "TelegramDecryptionError",
+    "ContextTypes",
+    "CallbackDataCache",
+    "InvalidCallbackData",
+    "_KeyboardData",
 }  # These modules/classes intentionally don't have __dict__.
 
 
 def test_class_has_slots_and_dict(mro_slots):
-    tg_paths = [p for p in iglob("telegram/**/*.py", recursive=True) if 'vendor' not in p]
+    tg_paths = [p for p in iglob("telegram/**/*.py", recursive=True) if "vendor" not in p]
 
     for path in tg_paths:
         # windows uses backslashes:
-        if os.name == 'nt':
-            split_path = path.split('\\')
+        if os.name == "nt":
+            split_path = path.split("\\")
         else:
-            split_path = path.split('/')
+            split_path = path.split("/")
         mod_name = f"telegram{'.ext.' if split_path[1] == 'ext' else '.'}{split_path[-1][:-3]}"
         spec = importlib.util.spec_from_file_location(mod_name, path)
         module = importlib.util.module_from_spec(spec)
@@ -54,29 +54,29 @@ def test_class_has_slots_and_dict(mro_slots):
 
         for name, cls in inspect.getmembers(module, inspect.isclass):
             if cls.__module__ != module.__name__ or any(  # exclude 'imported' modules
-                x in name for x in {'__class__', '__init__', 'Queue', 'Webhook'}
+                x in name for x in {"__class__", "__init__", "Queue", "Webhook"}
             ):
                 continue
-            assert '__slots__' in cls.__dict__, f"class '{name}' in {path} doesn't have __slots__"
+            assert "__slots__" in cls.__dict__, f"class '{name}' in {path} doesn't have __slots__"
             if cls.__module__ in excluded or name in excluded:
                 continue
-            assert '__dict__' in get_slots(cls), f"class '{name}' in {path} doesn't have __dict__"
+            assert "__dict__" in get_slots(cls), f"class '{name}' in {path} doesn't have __dict__"
 
 
 def get_slots(_class):
-    slots = [attr for cls in _class.__mro__ if hasattr(cls, '__slots__') for attr in cls.__slots__]
+    slots = [attr for cls in _class.__mro__ if hasattr(cls, "__slots__") for attr in cls.__slots__]
 
     # We're a bit hacky here to handle cases correctly, where we can't read the parents slots from
     # the mro
-    if '__dict__' not in slots:
+    if "__dict__" not in slots:
         try:
 
             class Subclass(_class):
-                __slots__ = ('__dict__',)
+                __slots__ = ("__dict__",)
 
         except TypeError as exc:
-            if '__dict__ slot disallowed: we already got one' in str(exc):
-                slots.append('__dict__')
+            if "__dict__ slot disallowed: we already got one" in str(exc):
+                slots.append("__dict__")
             else:
                 raise exc
 

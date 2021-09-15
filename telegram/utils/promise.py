@@ -25,7 +25,7 @@ import telegram.ext.utils.promise as promise
 from telegram.utils.deprecate import TelegramDeprecationWarning
 
 warnings.warn(
-    'telegram.utils.promise is deprecated. Please use telegram.ext.utils.promise instead.',
+    "telegram.utils.promise is deprecated. Please use telegram.ext.utils.promise instead.",
     TelegramDeprecationWarning,
 )
 

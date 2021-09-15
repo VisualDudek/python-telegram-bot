@@ -22,7 +22,7 @@ import pytest
 from telegram import EncryptedPassportElement, PassportFile, PassportElementError
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def encrypted_passport_element():
     return EncryptedPassportElement(
         TestEncryptedPassportElement.type_,
@@ -37,23 +37,23 @@ def encrypted_passport_element():
 
 
 class TestEncryptedPassportElement:
-    type_ = 'type'
-    data = 'data'
-    phone_number = 'phone_number'
-    email = 'email'
-    files = [PassportFile('file_id', 50, 0)]
-    front_side = PassportFile('file_id', 50, 0)
-    reverse_side = PassportFile('file_id', 50, 0)
-    selfie = PassportFile('file_id', 50, 0)
+    type_ = "type"
+    data = "data"
+    phone_number = "phone_number"
+    email = "email"
+    files = [PassportFile("file_id", 50, 0)]
+    front_side = PassportFile("file_id", 50, 0)
+    reverse_side = PassportFile("file_id", 50, 0)
+    selfie = PassportFile("file_id", 50, 0)
 
     def test_slot_behaviour(self, encrypted_passport_element, recwarn, mro_slots):
         inst = encrypted_passport_element
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.phone_number = 'should give warning', self.phone_number
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.phone_number = "should give warning", self.phone_number
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     def test_expected_values(self, encrypted_passport_element):
         assert encrypted_passport_element.type == self.type_
@@ -69,32 +69,32 @@ class TestEncryptedPassportElement:
         encrypted_passport_element_dict = encrypted_passport_element.to_dict()
 
         assert isinstance(encrypted_passport_element_dict, dict)
-        assert encrypted_passport_element_dict['type'] == encrypted_passport_element.type
-        assert encrypted_passport_element_dict['data'] == encrypted_passport_element.data
+        assert encrypted_passport_element_dict["type"] == encrypted_passport_element.type
+        assert encrypted_passport_element_dict["data"] == encrypted_passport_element.data
         assert (
-            encrypted_passport_element_dict['phone_number']
+            encrypted_passport_element_dict["phone_number"]
             == encrypted_passport_element.phone_number
         )
-        assert encrypted_passport_element_dict['email'] == encrypted_passport_element.email
-        assert isinstance(encrypted_passport_element_dict['files'], list)
+        assert encrypted_passport_element_dict["email"] == encrypted_passport_element.email
+        assert isinstance(encrypted_passport_element_dict["files"], list)
         assert (
-            encrypted_passport_element_dict['front_side']
+            encrypted_passport_element_dict["front_side"]
             == encrypted_passport_element.front_side.to_dict()
         )
         assert (
-            encrypted_passport_element_dict['reverse_side']
+            encrypted_passport_element_dict["reverse_side"]
             == encrypted_passport_element.reverse_side.to_dict()
         )
         assert (
-            encrypted_passport_element_dict['selfie']
+            encrypted_passport_element_dict["selfie"]
             == encrypted_passport_element.selfie.to_dict()
         )
 
     def test_equality(self):
         a = EncryptedPassportElement(self.type_, data=self.data)
         b = EncryptedPassportElement(self.type_, data=self.data)
-        c = EncryptedPassportElement(self.data, '')
-        d = PassportElementError('source', 'type', 'message')
+        c = EncryptedPassportElement(self.data, "")
+        d = PassportElementError("source", "type", "message")
 
         assert a == b
         assert hash(a) == hash(b)

@@ -32,7 +32,7 @@ from .utils.types import CCT
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
+RT = TypeVar("RT")
 
 
 class MessageHandler(Handler[Update, CCT]):
@@ -121,7 +121,7 @@ class MessageHandler(Handler[Update, CCT]):
 
     """
 
-    __slots__ = ('filters',)
+    __slots__ = ("filters",)
 
     def __init__(
         self,
@@ -147,7 +147,7 @@ class MessageHandler(Handler[Update, CCT]):
         )
         if message_updates is False and channel_post_updates is False and edited_updates is False:
             raise ValueError(
-                'message_updates, channel_post_updates and edited_updates are all False'
+                "message_updates, channel_post_updates and edited_updates are all False"
             )
         if filters is not None:
             self.filters = Filters.update & filters
@@ -155,7 +155,7 @@ class MessageHandler(Handler[Update, CCT]):
             self.filters = Filters.update
         if message_updates is not None:
             warnings.warn(
-                'message_updates is deprecated. See https://git.io/fxJuV for more info',
+                "message_updates is deprecated. See https://git.io/fxJuV for more info",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -164,7 +164,7 @@ class MessageHandler(Handler[Update, CCT]):
 
         if channel_post_updates is not None:
             warnings.warn(
-                'channel_post_updates is deprecated. See https://git.io/fxJuV ' 'for more info',
+                "channel_post_updates is deprecated. See https://git.io/fxJuV " "for more info",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -173,7 +173,7 @@ class MessageHandler(Handler[Update, CCT]):
 
         if edited_updates is not None:
             warnings.warn(
-                'edited_updates is deprecated. See https://git.io/fxJuV for more info',
+                "edited_updates is deprecated. See https://git.io/fxJuV for more info",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -200,7 +200,7 @@ class MessageHandler(Handler[Update, CCT]):
         self,
         context: CCT,
         update: Update,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: Optional[Union[bool, Dict[str, object]]],
     ) -> None:
         """Adds possible output of data filters to the :class:`CallbackContext`."""

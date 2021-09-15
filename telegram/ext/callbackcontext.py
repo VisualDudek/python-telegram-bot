@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from telegram import Bot
     from telegram.ext import Dispatcher, Job, JobQueue
 
-CC = TypeVar('CC', bound='CallbackContext')
+CC = TypeVar("CC", bound="CallbackContext")
 
 
 class CallbackContext(Generic[UD, CD, BD]):
@@ -93,26 +93,26 @@ class CallbackContext(Generic[UD, CD, BD]):
     """
 
     __slots__ = (
-        '_dispatcher',
-        '_chat_id_and_data',
-        '_user_id_and_data',
-        'args',
-        'matches',
-        'error',
-        'job',
-        'async_args',
-        'async_kwargs',
-        '__dict__',
+        "_dispatcher",
+        "_chat_id_and_data",
+        "_user_id_and_data",
+        "args",
+        "matches",
+        "error",
+        "job",
+        "async_args",
+        "async_kwargs",
+        "__dict__",
     )
 
-    def __init__(self, dispatcher: 'Dispatcher'):
+    def __init__(self, dispatcher: "Dispatcher"):
         """
         Args:
             dispatcher (:class:`telegram.ext.Dispatcher`):
         """
         if not dispatcher.use_context:
             raise ValueError(
-                'CallbackContext should not be used with a non context aware ' 'dispatcher!'
+                "CallbackContext should not be used with a non context aware " "dispatcher!"
             )
         self._dispatcher = dispatcher
         self._chat_id_and_data: Optional[Tuple[int, CD]] = None
@@ -120,12 +120,12 @@ class CallbackContext(Generic[UD, CD, BD]):
         self.args: Optional[List[str]] = None
         self.matches: Optional[List[Match]] = None
         self.error: Optional[Exception] = None
-        self.job: Optional['Job'] = None
+        self.job: Optional["Job"] = None
         self.async_args: Optional[Union[List, Tuple]] = None
         self.async_kwargs: Optional[Dict[str, object]] = None
 
     @property
-    def dispatcher(self) -> 'Dispatcher':
+    def dispatcher(self) -> "Dispatcher":
         """:class:`telegram.ext.Dispatcher`: The dispatcher associated with this context."""
         return self._dispatcher
 
@@ -217,18 +217,18 @@ class CallbackContext(Generic[UD, CD, BD]):
         if isinstance(self.bot, ExtBot):
             if not self.bot.arbitrary_callback_data:
                 raise RuntimeError(
-                    'This telegram.ext.ExtBot instance does not use arbitrary callback data.'
+                    "This telegram.ext.ExtBot instance does not use arbitrary callback data."
                 )
             self.bot.callback_data_cache.drop_data(callback_query)
         else:
-            raise RuntimeError('telegram.Bot does not allow for arbitrary callback data.')
+            raise RuntimeError("telegram.Bot does not allow for arbitrary callback data.")
 
     @classmethod
     def from_error(
         cls: Type[CC],
         update: object,
         error: Exception,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         async_args: Union[List, Tuple] = None,
         async_kwargs: Dict[str, object] = None,
     ) -> CC:
@@ -261,7 +261,7 @@ class CallbackContext(Generic[UD, CD, BD]):
         return self
 
     @classmethod
-    def from_update(cls: Type[CC], update: object, dispatcher: 'Dispatcher') -> CC:
+    def from_update(cls: Type[CC], update: object, dispatcher: "Dispatcher") -> CC:
         """
         Constructs an instance of :class:`telegram.ext.CallbackContext` to be passed to the
         handlers.
@@ -295,7 +295,7 @@ class CallbackContext(Generic[UD, CD, BD]):
         return self
 
     @classmethod
-    def from_job(cls: Type[CC], job: 'Job', dispatcher: 'Dispatcher') -> CC:
+    def from_job(cls: Type[CC], job: "Job", dispatcher: "Dispatcher") -> CC:
         """
         Constructs an instance of :class:`telegram.ext.CallbackContext` to be passed to a
         job callback.
@@ -324,12 +324,12 @@ class CallbackContext(Generic[UD, CD, BD]):
             setattr(self, key, value)
 
     @property
-    def bot(self) -> 'Bot':
+    def bot(self) -> "Bot":
         """:class:`telegram.Bot`: The bot associated with this context."""
         return self._dispatcher.bot
 
     @property
-    def job_queue(self) -> Optional['JobQueue']:
+    def job_queue(self) -> Optional["JobQueue"]:
         """
         :class:`telegram.ext.JobQueue`: The ``JobQueue`` used by the
             :class:`telegram.ext.Dispatcher` and (usually) the :class:`telegram.ext.Updater`

@@ -35,47 +35,47 @@ from telegram import (
 )
 from telegram.ext import InlineQueryHandler, CallbackContext, JobQueue
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'message': message},
-    {'edited_message': message},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat', message=message)},
-    {'channel_post': message},
-    {'edited_channel_post': message},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'pre_checkout_query': PreCheckoutQuery('id', User(1, '', False), '', 0, '')},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat')},
+    {"message": message},
+    {"edited_message": message},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat", message=message)},
+    {"channel_post": message},
+    {"edited_channel_post": message},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"pre_checkout_query": PreCheckoutQuery("id", User(1, "", False), "", 0, "")},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat")},
 ]
 
 ids = (
-    'message',
-    'edited_message',
-    'callback_query',
-    'channel_post',
-    'edited_channel_post',
-    'chosen_inline_result',
-    'shipping_query',
-    'pre_checkout_query',
-    'callback_query_without_message',
+    "message",
+    "edited_message",
+    "callback_query",
+    "channel_post",
+    "edited_channel_post",
+    "chosen_inline_result",
+    "shipping_query",
+    "pre_checkout_query",
+    "callback_query_without_message",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=2, **request.param)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def inline_query(bot):
     return Update(
         0,
         inline_query=InlineQuery(
-            'id',
-            User(2, 'test user', False),
-            'test query',
-            offset='22',
+            "id",
+            User(2, "test user", False),
+            "test query",
+            offset="22",
             location=Location(latitude=-23.691288, longitude=-46.788279),
         ),
     )
@@ -87,11 +87,11 @@ class TestInlineQueryHandler:
     def test_slot_behaviour(self, recwarn, mro_slots):
         handler = InlineQueryHandler(self.callback_context)
         for attr in handler.__slots__:
-            assert getattr(handler, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(handler, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not handler.__dict__, f"got missing slot(s): {handler.__dict__}"
         assert len(mro_slots(handler)) == len(set(mro_slots(handler))), "duplicate slot"
-        handler.custom, handler.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        handler.custom, handler.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -116,9 +116,9 @@ class TestInlineQueryHandler:
 
     def callback_group(self, bot, update, groups=None, groupdict=None):
         if groups is not None:
-            self.test_flag = groups == ('t', ' query')
+            self.test_flag = groups == ("t", " query")
         if groupdict is not None:
-            self.test_flag = groupdict == {'begin': 't', 'end': ' query'}
+            self.test_flag = groupdict == {"begin": "t", "end": " query"}
 
     def callback_context(self, update, context):
         self.test_flag = (
@@ -135,9 +135,9 @@ class TestInlineQueryHandler:
 
     def callback_context_pattern(self, update, context):
         if context.matches[0].groups():
-            self.test_flag = context.matches[0].groups() == ('t', ' query')
+            self.test_flag = context.matches[0].groups() == ("t", " query")
         if context.matches[0].groupdict():
-            self.test_flag = context.matches[0].groupdict() == {'begin': 't', 'end': ' query'}
+            self.test_flag = context.matches[0].groupdict() == {"begin": "t", "end": " query"}
 
     def test_basic(self, dp, inline_query):
         handler = InlineQueryHandler(self.callback_basic)
@@ -149,16 +149,16 @@ class TestInlineQueryHandler:
         assert self.test_flag
 
     def test_with_pattern(self, inline_query):
-        handler = InlineQueryHandler(self.callback_basic, pattern='(?P<begin>.*)est(?P<end>.*)')
+        handler = InlineQueryHandler(self.callback_basic, pattern="(?P<begin>.*)est(?P<end>.*)")
 
         assert handler.check_update(inline_query)
 
-        inline_query.inline_query.query = 'nothing here'
+        inline_query.inline_query.query = "nothing here"
         assert not handler.check_update(inline_query)
 
     def test_with_passing_group_dict(self, dp, inline_query):
         handler = InlineQueryHandler(
-            self.callback_group, pattern='(?P<begin>.*)est(?P<end>.*)', pass_groups=True
+            self.callback_group, pattern="(?P<begin>.*)est(?P<end>.*)", pass_groups=True
         )
         dp.add_handler(handler)
 
@@ -167,7 +167,7 @@ class TestInlineQueryHandler:
 
         dp.remove_handler(handler)
         handler = InlineQueryHandler(
-            self.callback_group, pattern='(?P<begin>.*)est(?P<end>.*)', pass_groupdict=True
+            self.callback_group, pattern="(?P<begin>.*)est(?P<end>.*)", pass_groupdict=True
         )
         dp.add_handler(handler)
 
@@ -238,7 +238,7 @@ class TestInlineQueryHandler:
 
     def test_context_pattern(self, cdp, inline_query):
         handler = InlineQueryHandler(
-            self.callback_context_pattern, pattern=r'(?P<begin>.*)est(?P<end>.*)'
+            self.callback_context_pattern, pattern=r"(?P<begin>.*)est(?P<end>.*)"
         )
         cdp.add_handler(handler)
 
@@ -246,15 +246,15 @@ class TestInlineQueryHandler:
         assert self.test_flag
 
         cdp.remove_handler(handler)
-        handler = InlineQueryHandler(self.callback_context_pattern, pattern=r'(t)est(.*)')
+        handler = InlineQueryHandler(self.callback_context_pattern, pattern=r"(t)est(.*)")
         cdp.add_handler(handler)
 
         cdp.process_update(inline_query)
         assert self.test_flag
 
-    @pytest.mark.parametrize('chat_types', [[Chat.SENDER], [Chat.SENDER, Chat.SUPERGROUP], []])
+    @pytest.mark.parametrize("chat_types", [[Chat.SENDER], [Chat.SENDER, Chat.SUPERGROUP], []])
     @pytest.mark.parametrize(
-        'chat_type,result', [(Chat.SENDER, True), (Chat.CHANNEL, False), (None, False)]
+        "chat_type,result", [(Chat.SENDER, True), (Chat.CHANNEL, False), (None, False)]
     )
     def test_chat_types(self, cdp, inline_query, chat_types, chat_type, result):
         try:

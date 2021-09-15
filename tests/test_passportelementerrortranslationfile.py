@@ -21,7 +21,7 @@ import pytest
 from telegram import PassportElementErrorTranslationFile, PassportElementErrorDataField
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def passport_element_error_translation_file():
     return PassportElementErrorTranslationFile(
         TestPassportElementErrorTranslationFile.type_,
@@ -31,19 +31,19 @@ def passport_element_error_translation_file():
 
 
 class TestPassportElementErrorTranslationFile:
-    source = 'translation_file'
-    type_ = 'test_type'
-    file_hash = 'file_hash'
-    message = 'Error message'
+    source = "translation_file"
+    type_ = "test_type"
+    file_hash = "file_hash"
+    message = "Error message"
 
     def test_slot_behaviour(self, passport_element_error_translation_file, recwarn, mro_slots):
         inst = passport_element_error_translation_file
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.type = 'should give warning', self.type_
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.type = "should give warning", self.type_
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     def test_expected_values(self, passport_element_error_translation_file):
         assert passport_element_error_translation_file.source == self.source
@@ -58,29 +58,29 @@ class TestPassportElementErrorTranslationFile:
 
         assert isinstance(passport_element_error_translation_file_dict, dict)
         assert (
-            passport_element_error_translation_file_dict['source']
+            passport_element_error_translation_file_dict["source"]
             == passport_element_error_translation_file.source
         )
         assert (
-            passport_element_error_translation_file_dict['type']
+            passport_element_error_translation_file_dict["type"]
             == passport_element_error_translation_file.type
         )
         assert (
-            passport_element_error_translation_file_dict['file_hash']
+            passport_element_error_translation_file_dict["file_hash"]
             == passport_element_error_translation_file.file_hash
         )
         assert (
-            passport_element_error_translation_file_dict['message']
+            passport_element_error_translation_file_dict["message"]
             == passport_element_error_translation_file.message
         )
 
     def test_equality(self):
         a = PassportElementErrorTranslationFile(self.type_, self.file_hash, self.message)
         b = PassportElementErrorTranslationFile(self.type_, self.file_hash, self.message)
-        c = PassportElementErrorTranslationFile(self.type_, '', '')
-        d = PassportElementErrorTranslationFile('', self.file_hash, '')
-        e = PassportElementErrorTranslationFile('', '', self.message)
-        f = PassportElementErrorDataField(self.type_, '', '', self.message)
+        c = PassportElementErrorTranslationFile(self.type_, "", "")
+        d = PassportElementErrorTranslationFile("", self.file_hash, "")
+        e = PassportElementErrorTranslationFile("", "", self.message)
+        f = PassportElementErrorDataField(self.type_, "", "", self.message)
 
         assert a == b
         assert hash(a) == hash(b)

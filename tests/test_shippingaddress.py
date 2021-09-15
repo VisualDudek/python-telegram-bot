@@ -21,7 +21,7 @@ import pytest
 from telegram import ShippingAddress
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def shipping_address():
     return ShippingAddress(
         TestShippingAddress.country_code,
@@ -34,30 +34,30 @@ def shipping_address():
 
 
 class TestShippingAddress:
-    country_code = 'GB'
-    state = 'state'
-    city = 'London'
-    street_line1 = '12 Grimmauld Place'
-    street_line2 = 'street_line2'
-    post_code = 'WC1'
+    country_code = "GB"
+    state = "state"
+    city = "London"
+    street_line1 = "12 Grimmauld Place"
+    street_line2 = "street_line2"
+    post_code = "WC1"
 
     def test_slot_behaviour(self, shipping_address, recwarn, mro_slots):
         inst = shipping_address
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.state = 'should give warning', self.state
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.state = "should give warning", self.state
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     def test_de_json(self, bot):
         json_dict = {
-            'country_code': self.country_code,
-            'state': self.state,
-            'city': self.city,
-            'street_line1': self.street_line1,
-            'street_line2': self.street_line2,
-            'post_code': self.post_code,
+            "country_code": self.country_code,
+            "state": self.state,
+            "city": self.city,
+            "street_line1": self.street_line1,
+            "street_line2": self.street_line2,
+            "post_code": self.post_code,
         }
         shipping_address = ShippingAddress.de_json(json_dict, bot)
 
@@ -72,12 +72,12 @@ class TestShippingAddress:
         shipping_address_dict = shipping_address.to_dict()
 
         assert isinstance(shipping_address_dict, dict)
-        assert shipping_address_dict['country_code'] == shipping_address.country_code
-        assert shipping_address_dict['state'] == shipping_address.state
-        assert shipping_address_dict['city'] == shipping_address.city
-        assert shipping_address_dict['street_line1'] == shipping_address.street_line1
-        assert shipping_address_dict['street_line2'] == shipping_address.street_line2
-        assert shipping_address_dict['post_code'] == shipping_address.post_code
+        assert shipping_address_dict["country_code"] == shipping_address.country_code
+        assert shipping_address_dict["state"] == shipping_address.state
+        assert shipping_address_dict["city"] == shipping_address.city
+        assert shipping_address_dict["street_line1"] == shipping_address.street_line1
+        assert shipping_address_dict["street_line2"] == shipping_address.street_line2
+        assert shipping_address_dict["post_code"] == shipping_address.post_code
 
     def test_equality(self):
         a = ShippingAddress(
@@ -97,22 +97,22 @@ class TestShippingAddress:
             self.post_code,
         )
         d = ShippingAddress(
-            '', self.state, self.city, self.street_line1, self.street_line2, self.post_code
+            "", self.state, self.city, self.street_line1, self.street_line2, self.post_code
         )
         d2 = ShippingAddress(
-            self.country_code, '', self.city, self.street_line1, self.street_line2, self.post_code
+            self.country_code, "", self.city, self.street_line1, self.street_line2, self.post_code
         )
         d3 = ShippingAddress(
-            self.country_code, self.state, '', self.street_line1, self.street_line2, self.post_code
+            self.country_code, self.state, "", self.street_line1, self.street_line2, self.post_code
         )
         d4 = ShippingAddress(
-            self.country_code, self.state, self.city, '', self.street_line2, self.post_code
+            self.country_code, self.state, self.city, "", self.street_line2, self.post_code
         )
         d5 = ShippingAddress(
-            self.country_code, self.state, self.city, self.street_line1, '', self.post_code
+            self.country_code, self.state, self.city, self.street_line1, "", self.post_code
         )
         d6 = ShippingAddress(
-            self.country_code, self.state, self.city, self.street_line1, self.street_line2, ''
+            self.country_code, self.state, self.city, self.street_line1, self.street_line2, ""
         )
 
         assert a == b

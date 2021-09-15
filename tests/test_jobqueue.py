@@ -36,7 +36,7 @@ class CustomContext(CallbackContext):
     pass
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def job_queue(bot, _dp):
     jq = JobQueue()
     jq.set_dispatcher(_dp)
@@ -46,7 +46,7 @@ def job_queue(bot, _dp):
 
 
 @pytest.mark.skipif(
-    os.getenv('GITHUB_ACTIONS', False) and platform.system() in ['Windows', 'Darwin'],
+    os.getenv("GITHUB_ACTIONS", False) and platform.system() in ["Windows", "Darwin"],
     reason="On Windows & MacOS precise timings are not accurate.",
 )
 @flaky(10, 1)  # Timings aren't quite perfect
@@ -57,11 +57,11 @@ class TestJobQueue:
 
     def test_slot_behaviour(self, job_queue, recwarn, mro_slots, _dp):
         for attr in job_queue.__slots__:
-            assert getattr(job_queue, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(job_queue, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not job_queue.__dict__, f"got missing slot(s): {job_queue.__dict__}"
         assert len(mro_slots(job_queue)) == len(set(mro_slots(job_queue))), "duplicate slot"
-        job_queue.custom, job_queue._dispatcher = 'should give warning', _dp
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        job_queue.custom, job_queue._dispatcher = "should give warning", _dp
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -73,7 +73,7 @@ class TestJobQueue:
         self.result += 1
 
     def job_with_exception(self, bot, job=None):
-        raise Exception('Test Error')
+        raise Exception("Test Error")
 
     def job_remove_self(self, bot, job):
         self.result += 1
@@ -105,7 +105,7 @@ class TestJobQueue:
         self.received_error = str(context.error)
 
     def error_handler_raise_error(self, *args):
-        raise Exception('Failing bigly')
+        raise Exception("Failing bigly")
 
     def test_run_once(self, job_queue):
         job_queue.run_once(self.job_run_once, 0.01)
@@ -173,7 +173,7 @@ class TestJobQueue:
         assert self.result == 2
 
     def test_run_custom(self, job_queue):
-        job_queue.run_custom(self.job_run_once, {'trigger': 'interval', 'seconds': 0.02})
+        job_queue.run_custom(self.job_run_once, {"trigger": "interval", "seconds": 0.02})
         sleep(0.05)
         assert self.result == 2
 
@@ -380,7 +380,7 @@ class TestJobQueue:
         finally:
             _dp.bot = original_bot
 
-    @pytest.mark.parametrize('use_context', [True, False])
+    @pytest.mark.parametrize("use_context", [True, False])
     def test_get_jobs(self, job_queue, use_context):
         job_queue._dispatcher.use_context = use_context
         if use_context:
@@ -388,13 +388,13 @@ class TestJobQueue:
         else:
             callback = self.job_run_once
 
-        job1 = job_queue.run_once(callback, 10, name='name1')
-        job2 = job_queue.run_once(callback, 10, name='name1')
-        job3 = job_queue.run_once(callback, 10, name='name2')
+        job1 = job_queue.run_once(callback, 10, name="name1")
+        job2 = job_queue.run_once(callback, 10, name="name1")
+        job3 = job_queue.run_once(callback, 10, name="name2")
 
         assert job_queue.jobs() == (job1, job2, job3)
-        assert job_queue.get_jobs_by_name('name1') == (job1, job2)
-        assert job_queue.get_jobs_by_name('name2') == (job3,)
+        assert job_queue.get_jobs_by_name("name1") == (job1, job2)
+        assert job_queue.get_jobs_by_name("name2") == (job3,)
 
     def test_context_based_callback(self, job_queue):
         job_queue._dispatcher.use_context = True
@@ -405,7 +405,7 @@ class TestJobQueue:
         assert self.result == 1
         job_queue._dispatcher.use_context = False
 
-    @pytest.mark.parametrize('use_context', [True, False])
+    @pytest.mark.parametrize("use_context", [True, False])
     def test_job_run(self, _dp, use_context):
         _dp.use_context = use_context
         job_queue = JobQueue()
@@ -451,10 +451,10 @@ class TestJobQueue:
 
         job = job_queue.run_once(self.job_with_exception, 0.05)
         sleep(0.1)
-        assert self.received_error == 'Test Error'
+        assert self.received_error == "Test Error"
         self.received_error = None
         job.run(dp)
-        assert self.received_error == 'Test Error'
+        assert self.received_error == "Test Error"
 
         # Remove handler
         dp.remove_error_handler(self.error_handler)
@@ -471,10 +471,10 @@ class TestJobQueue:
 
         job = job_queue.run_once(self.job_with_exception, 0.05)
         sleep(0.1)
-        assert self.received_error == 'Test Error'
+        assert self.received_error == "Test Error"
         self.received_error = None
         job.run(cdp)
-        assert self.received_error == 'Test Error'
+        assert self.received_error == "Test Error"
 
         # Remove handler
         cdp.remove_error_handler(self.error_handler_context)
@@ -494,16 +494,16 @@ class TestJobQueue:
         sleep(0.1)
         assert len(caplog.records) == 1
         rec = caplog.records[-1]
-        assert 'processing the job' in rec.getMessage()
-        assert 'uncaught error was raised while handling' in rec.getMessage()
+        assert "processing the job" in rec.getMessage()
+        assert "uncaught error was raised while handling" in rec.getMessage()
         caplog.clear()
 
         with caplog.at_level(logging.ERROR):
             job.run(dp)
         assert len(caplog.records) == 1
         rec = caplog.records[-1]
-        assert 'processing the job' in rec.getMessage()
-        assert 'uncaught error was raised while handling' in rec.getMessage()
+        assert "processing the job" in rec.getMessage()
+        assert "uncaught error was raised while handling" in rec.getMessage()
         caplog.clear()
 
         # Remove handler
@@ -515,14 +515,14 @@ class TestJobQueue:
         sleep(0.1)
         assert len(caplog.records) == 1
         rec = caplog.records[-1]
-        assert 'No error handlers are registered' in rec.getMessage()
+        assert "No error handlers are registered" in rec.getMessage()
         caplog.clear()
 
         with caplog.at_level(logging.ERROR):
             job.run(dp)
         assert len(caplog.records) == 1
         rec = caplog.records[-1]
-        assert 'No error handlers are registered' in rec.getMessage()
+        assert "No error handlers are registered" in rec.getMessage()
 
     def test_custom_context(self, bot, job_queue):
         dispatcher = Dispatcher(

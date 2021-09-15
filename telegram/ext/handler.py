@@ -31,8 +31,8 @@ from telegram.ext.utils.types import CCT
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
-UT = TypeVar('UT')
+RT = TypeVar("RT")
+UT = TypeVar("UT")
 
 
 class Handler(Generic[UT, CCT], ABC):
@@ -96,22 +96,22 @@ class Handler(Generic[UT, CCT], ABC):
     # Apparently Py 3.7 and below have '__dict__' in ABC
     if py_ver < (3, 7):
         __slots__ = (
-            'callback',
-            'pass_update_queue',
-            'pass_job_queue',
-            'pass_user_data',
-            'pass_chat_data',
-            'run_async',
+            "callback",
+            "pass_update_queue",
+            "pass_job_queue",
+            "pass_user_data",
+            "pass_chat_data",
+            "run_async",
         )
     else:
         __slots__ = (
-            'callback',  # type: ignore[assignment]
-            'pass_update_queue',
-            'pass_job_queue',
-            'pass_user_data',
-            'pass_chat_data',
-            'run_async',
-            '__dict__',
+            "callback",  # type: ignore[assignment]
+            "pass_update_queue",
+            "pass_job_queue",
+            "pass_user_data",
+            "pass_chat_data",
+            "run_async",
+            "__dict__",
         )
 
     def __init__(
@@ -132,10 +132,10 @@ class Handler(Generic[UT, CCT], ABC):
 
     def __setattr__(self, key: str, value: object) -> None:
         # See comment on BaseFilter to know why this was done.
-        if key.startswith('__'):
+        if key.startswith("__"):
             key = f"_{self.__class__.__name__}{key}"
         if issubclass(self.__class__, Handler) and not self.__class__.__module__.startswith(
-            'telegram.ext.'
+            "telegram.ext."
         ):
             object.__setattr__(self, key, value)
             return
@@ -164,7 +164,7 @@ class Handler(Generic[UT, CCT], ABC):
     def handle_update(
         self,
         update: UT,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: object,
         context: CCT = None,
     ) -> Union[RT, Promise]:
@@ -208,7 +208,7 @@ class Handler(Generic[UT, CCT], ABC):
         self,
         context: CCT,
         update: UT,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: Any,
     ) -> None:
         """Prepares additional arguments for the context. Override if needed.
@@ -223,7 +223,7 @@ class Handler(Generic[UT, CCT], ABC):
 
     def collect_optional_args(
         self,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         update: UT = None,
         check_result: Any = None,  # pylint: disable=W0613
     ) -> Dict[str, object]:
@@ -243,17 +243,17 @@ class Handler(Generic[UT, CCT], ABC):
         optional_args: Dict[str, object] = {}
 
         if self.pass_update_queue:
-            optional_args['update_queue'] = dispatcher.update_queue
+            optional_args["update_queue"] = dispatcher.update_queue
         if self.pass_job_queue:
-            optional_args['job_queue'] = dispatcher.job_queue
+            optional_args["job_queue"] = dispatcher.job_queue
         if self.pass_user_data and isinstance(update, Update):
             user = update.effective_user
-            optional_args['user_data'] = dispatcher.user_data[
+            optional_args["user_data"] = dispatcher.user_data[
                 user.id if user else None  # type: ignore[index]
             ]
         if self.pass_chat_data and isinstance(update, Update):
             chat = update.effective_chat
-            optional_args['chat_data'] = dispatcher.chat_data[
+            optional_args["chat_data"] = dispatcher.chat_data[
                 chat.id if chat else None  # type: ignore[index]
             ]
 

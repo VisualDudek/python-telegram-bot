@@ -35,36 +35,36 @@ from telegram import (
 )
 from telegram.ext import RegexHandler, CallbackContext, JobQueue
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat', message=message)},
-    {'inline_query': InlineQuery(1, User(1, '', False), '', '')},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'pre_checkout_query': PreCheckoutQuery('id', User(1, '', False), '', 0, '')},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat')},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat", message=message)},
+    {"inline_query": InlineQuery(1, User(1, "", False), "", "")},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"pre_checkout_query": PreCheckoutQuery("id", User(1, "", False), "", 0, "")},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat")},
 ]
 
 ids = (
-    'callback_query',
-    'inline_query',
-    'chosen_inline_result',
-    'shipping_query',
-    'pre_checkout_query',
-    'callback_query_without_message',
+    "callback_query",
+    "inline_query",
+    "chosen_inline_result",
+    "shipping_query",
+    "pre_checkout_query",
+    "callback_query_without_message",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=1, **request.param)
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def message(bot):
     return Message(
-        1, None, Chat(1, ''), from_user=User(1, '', False), text='test message', bot=bot
+        1, None, Chat(1, ""), from_user=User(1, "", False), text="test message", bot=bot
     )
 
 
@@ -74,11 +74,11 @@ class TestRegexHandler:
     def test_slot_behaviour(self, recwarn, mro_slots):
         inst = RegexHandler("", self.callback_basic)
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.callback = 'should give warning', self.callback_basic
-        assert 'custom' in str(recwarn[-1].message), recwarn.list
+        inst.custom, inst.callback = "should give warning", self.callback_basic
+        assert "custom" in str(recwarn[-1].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -103,9 +103,9 @@ class TestRegexHandler:
 
     def callback_group(self, bot, update, groups=None, groupdict=None):
         if groups is not None:
-            self.test_flag = groups == ('t', ' message')
+            self.test_flag = groups == ("t", " message")
         if groupdict is not None:
-            self.test_flag = groupdict == {'begin': 't', 'end': ' message'}
+            self.test_flag = groupdict == {"begin": "t", "end": " message"}
 
     def callback_context(self, update, context):
         self.test_flag = (
@@ -122,16 +122,16 @@ class TestRegexHandler:
 
     def callback_context_pattern(self, update, context):
         if context.matches[0].groups():
-            self.test_flag = context.matches[0].groups() == ('t', ' message')
+            self.test_flag = context.matches[0].groups() == ("t", " message")
         if context.matches[0].groupdict():
-            self.test_flag = context.matches[0].groupdict() == {'begin': 't', 'end': ' message'}
+            self.test_flag = context.matches[0].groupdict() == {"begin": "t", "end": " message"}
 
     def test_deprecation_Warning(self):
-        with pytest.warns(TelegramDeprecationWarning, match='RegexHandler is deprecated.'):
-            RegexHandler('.*', self.callback_basic)
+        with pytest.warns(TelegramDeprecationWarning, match="RegexHandler is deprecated."):
+            RegexHandler(".*", self.callback_basic)
 
     def test_basic(self, dp, message):
-        handler = RegexHandler('.*', self.callback_basic)
+        handler = RegexHandler(".*", self.callback_basic)
         dp.add_handler(handler)
 
         assert handler.check_update(Update(0, message))
@@ -139,16 +139,16 @@ class TestRegexHandler:
         assert self.test_flag
 
     def test_pattern(self, message):
-        handler = RegexHandler('.*est.*', self.callback_basic)
+        handler = RegexHandler(".*est.*", self.callback_basic)
 
         assert handler.check_update(Update(0, message))
 
-        handler = RegexHandler('.*not in here.*', self.callback_basic)
+        handler = RegexHandler(".*not in here.*", self.callback_basic)
         assert not handler.check_update(Update(0, message))
 
     def test_with_passing_group_dict(self, dp, message):
         handler = RegexHandler(
-            '(?P<begin>.*)est(?P<end>.*)', self.callback_group, pass_groups=True
+            "(?P<begin>.*)est(?P<end>.*)", self.callback_group, pass_groups=True
         )
         dp.add_handler(handler)
         dp.process_update(Update(0, message))
@@ -156,7 +156,7 @@ class TestRegexHandler:
 
         dp.remove_handler(handler)
         handler = RegexHandler(
-            '(?P<begin>.*)est(?P<end>.*)', self.callback_group, pass_groupdict=True
+            "(?P<begin>.*)est(?P<end>.*)", self.callback_group, pass_groupdict=True
         )
         dp.add_handler(handler)
 
@@ -166,7 +166,7 @@ class TestRegexHandler:
 
     def test_edited(self, message):
         handler = RegexHandler(
-            '.*',
+            ".*",
             self.callback_basic,
             edited_updates=True,
             message_updates=False,
@@ -180,7 +180,7 @@ class TestRegexHandler:
 
     def test_channel_post(self, message):
         handler = RegexHandler(
-            '.*',
+            ".*",
             self.callback_basic,
             edited_updates=False,
             message_updates=False,
@@ -194,7 +194,7 @@ class TestRegexHandler:
 
     def test_multiple_flags(self, message):
         handler = RegexHandler(
-            '.*',
+            ".*",
             self.callback_basic,
             edited_updates=True,
             message_updates=True,
@@ -207,9 +207,9 @@ class TestRegexHandler:
         assert handler.check_update(Update(0, edited_channel_post=message))
 
     def test_none_allowed(self):
-        with pytest.raises(ValueError, match='are all False'):
+        with pytest.raises(ValueError, match="are all False"):
             RegexHandler(
-                '.*',
+                ".*",
                 self.callback_basic,
                 message_updates=False,
                 channel_post_updates=False,
@@ -217,14 +217,14 @@ class TestRegexHandler:
             )
 
     def test_pass_user_or_chat_data(self, dp, message):
-        handler = RegexHandler('.*', self.callback_data_1, pass_user_data=True)
+        handler = RegexHandler(".*", self.callback_data_1, pass_user_data=True)
         dp.add_handler(handler)
 
         dp.process_update(Update(0, message=message))
         assert self.test_flag
 
         dp.remove_handler(handler)
-        handler = RegexHandler('.*', self.callback_data_1, pass_chat_data=True)
+        handler = RegexHandler(".*", self.callback_data_1, pass_chat_data=True)
         dp.add_handler(handler)
 
         self.test_flag = False
@@ -233,7 +233,7 @@ class TestRegexHandler:
 
         dp.remove_handler(handler)
         handler = RegexHandler(
-            '.*', self.callback_data_2, pass_chat_data=True, pass_user_data=True
+            ".*", self.callback_data_2, pass_chat_data=True, pass_user_data=True
         )
         dp.add_handler(handler)
 
@@ -242,14 +242,14 @@ class TestRegexHandler:
         assert self.test_flag
 
     def test_pass_job_or_update_queue(self, dp, message):
-        handler = RegexHandler('.*', self.callback_queue_1, pass_job_queue=True)
+        handler = RegexHandler(".*", self.callback_queue_1, pass_job_queue=True)
         dp.add_handler(handler)
 
         dp.process_update(Update(0, message=message))
         assert self.test_flag
 
         dp.remove_handler(handler)
-        handler = RegexHandler('.*', self.callback_queue_1, pass_update_queue=True)
+        handler = RegexHandler(".*", self.callback_queue_1, pass_update_queue=True)
         dp.add_handler(handler)
 
         self.test_flag = False
@@ -258,7 +258,7 @@ class TestRegexHandler:
 
         dp.remove_handler(handler)
         handler = RegexHandler(
-            '.*', self.callback_queue_2, pass_job_queue=True, pass_update_queue=True
+            ".*", self.callback_queue_2, pass_job_queue=True, pass_update_queue=True
         )
         dp.add_handler(handler)
 
@@ -267,25 +267,25 @@ class TestRegexHandler:
         assert self.test_flag
 
     def test_other_update_types(self, false_update):
-        handler = RegexHandler('.*', self.callback_basic, edited_updates=True)
+        handler = RegexHandler(".*", self.callback_basic, edited_updates=True)
         assert not handler.check_update(false_update)
 
     def test_context(self, cdp, message):
-        handler = RegexHandler(r'(t)est(.*)', self.callback_context)
+        handler = RegexHandler(r"(t)est(.*)", self.callback_context)
         cdp.add_handler(handler)
 
         cdp.process_update(Update(0, message=message))
         assert self.test_flag
 
     def test_context_pattern(self, cdp, message):
-        handler = RegexHandler(r'(t)est(.*)', self.callback_context_pattern)
+        handler = RegexHandler(r"(t)est(.*)", self.callback_context_pattern)
         cdp.add_handler(handler)
 
         cdp.process_update(Update(0, message=message))
         assert self.test_flag
 
         cdp.remove_handler(handler)
-        handler = RegexHandler(r'(t)est(.*)', self.callback_context_pattern)
+        handler = RegexHandler(r"(t)est(.*)", self.callback_context_pattern)
         cdp.add_handler(handler)
 
         cdp.process_update(Update(0, message=message))

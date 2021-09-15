@@ -34,36 +34,36 @@ from telegram import (
 )
 from telegram.ext import StringRegexHandler, CallbackContext, JobQueue
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'message': message},
-    {'edited_message': message},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat', message=message)},
-    {'channel_post': message},
-    {'edited_channel_post': message},
-    {'inline_query': InlineQuery(1, User(1, '', False), '', '')},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'pre_checkout_query': PreCheckoutQuery('id', User(1, '', False), '', 0, '')},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat')},
+    {"message": message},
+    {"edited_message": message},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat", message=message)},
+    {"channel_post": message},
+    {"edited_channel_post": message},
+    {"inline_query": InlineQuery(1, User(1, "", False), "", "")},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"pre_checkout_query": PreCheckoutQuery("id", User(1, "", False), "", 0, "")},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat")},
 ]
 
 ids = (
-    'message',
-    'edited_message',
-    'callback_query',
-    'channel_post',
-    'edited_channel_post',
-    'inline_query',
-    'chosen_inline_result',
-    'shipping_query',
-    'pre_checkout_query',
-    'callback_query_without_message',
+    "message",
+    "edited_message",
+    "callback_query",
+    "channel_post",
+    "edited_channel_post",
+    "inline_query",
+    "chosen_inline_result",
+    "shipping_query",
+    "pre_checkout_query",
+    "callback_query_without_message",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=1, **request.param)
 
@@ -72,13 +72,13 @@ class TestStringRegexHandler:
     test_flag = False
 
     def test_slot_behaviour(self, mro_slots, recwarn):
-        inst = StringRegexHandler('pfft', self.callback_basic)
+        inst = StringRegexHandler("pfft", self.callback_basic)
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -97,9 +97,9 @@ class TestStringRegexHandler:
 
     def callback_group(self, bot, update, groups=None, groupdict=None):
         if groups is not None:
-            self.test_flag = groups == ('t', ' message')
+            self.test_flag = groups == ("t", " message")
         if groupdict is not None:
-            self.test_flag = groupdict == {'begin': 't', 'end': ' message'}
+            self.test_flag = groupdict == {"begin": "t", "end": " message"}
 
     def callback_context(self, update, context):
         self.test_flag = (
@@ -112,85 +112,85 @@ class TestStringRegexHandler:
 
     def callback_context_pattern(self, update, context):
         if context.matches[0].groups():
-            self.test_flag = context.matches[0].groups() == ('t', ' message')
+            self.test_flag = context.matches[0].groups() == ("t", " message")
         if context.matches[0].groupdict():
-            self.test_flag = context.matches[0].groupdict() == {'begin': 't', 'end': ' message'}
+            self.test_flag = context.matches[0].groupdict() == {"begin": "t", "end": " message"}
 
     def test_basic(self, dp):
-        handler = StringRegexHandler('(?P<begin>.*)est(?P<end>.*)', self.callback_basic)
+        handler = StringRegexHandler("(?P<begin>.*)est(?P<end>.*)", self.callback_basic)
         dp.add_handler(handler)
 
-        assert handler.check_update('test message')
-        dp.process_update('test message')
+        assert handler.check_update("test message")
+        dp.process_update("test message")
         assert self.test_flag
 
-        assert not handler.check_update('does not match')
+        assert not handler.check_update("does not match")
 
     def test_with_passing_group_dict(self, dp):
         handler = StringRegexHandler(
-            '(?P<begin>.*)est(?P<end>.*)', self.callback_group, pass_groups=True
+            "(?P<begin>.*)est(?P<end>.*)", self.callback_group, pass_groups=True
         )
         dp.add_handler(handler)
 
-        dp.process_update('test message')
+        dp.process_update("test message")
         assert self.test_flag
 
         dp.remove_handler(handler)
         handler = StringRegexHandler(
-            '(?P<begin>.*)est(?P<end>.*)', self.callback_group, pass_groupdict=True
+            "(?P<begin>.*)est(?P<end>.*)", self.callback_group, pass_groupdict=True
         )
         dp.add_handler(handler)
 
         self.test_flag = False
-        dp.process_update('test message')
+        dp.process_update("test message")
         assert self.test_flag
 
     def test_pass_job_or_update_queue(self, dp):
-        handler = StringRegexHandler('test', self.callback_queue_1, pass_job_queue=True)
+        handler = StringRegexHandler("test", self.callback_queue_1, pass_job_queue=True)
         dp.add_handler(handler)
 
-        dp.process_update('test')
+        dp.process_update("test")
         assert self.test_flag
 
         dp.remove_handler(handler)
-        handler = StringRegexHandler('test', self.callback_queue_1, pass_update_queue=True)
+        handler = StringRegexHandler("test", self.callback_queue_1, pass_update_queue=True)
         dp.add_handler(handler)
 
         self.test_flag = False
-        dp.process_update('test')
+        dp.process_update("test")
         assert self.test_flag
 
         dp.remove_handler(handler)
         handler = StringRegexHandler(
-            'test', self.callback_queue_2, pass_job_queue=True, pass_update_queue=True
+            "test", self.callback_queue_2, pass_job_queue=True, pass_update_queue=True
         )
         dp.add_handler(handler)
 
         self.test_flag = False
-        dp.process_update('test')
+        dp.process_update("test")
         assert self.test_flag
 
     def test_other_update_types(self, false_update):
-        handler = StringRegexHandler('test', self.callback_basic)
+        handler = StringRegexHandler("test", self.callback_basic)
         assert not handler.check_update(false_update)
 
     def test_context(self, cdp):
-        handler = StringRegexHandler(r'(t)est(.*)', self.callback_context)
+        handler = StringRegexHandler(r"(t)est(.*)", self.callback_context)
         cdp.add_handler(handler)
 
-        cdp.process_update('test message')
+        cdp.process_update("test message")
         assert self.test_flag
 
     def test_context_pattern(self, cdp):
-        handler = StringRegexHandler(r'(t)est(.*)', self.callback_context_pattern)
+        handler = StringRegexHandler(r"(t)est(.*)", self.callback_context_pattern)
         cdp.add_handler(handler)
 
-        cdp.process_update('test message')
+        cdp.process_update("test message")
         assert self.test_flag
 
         cdp.remove_handler(handler)
-        handler = StringRegexHandler(r'(t)est(.*)', self.callback_context_pattern)
+        handler = StringRegexHandler(r"(t)est(.*)", self.callback_context_pattern)
         cdp.add_handler(handler)
 
-        cdp.process_update('test message')
+        cdp.process_update("test message")
         assert self.test_flag

@@ -28,7 +28,7 @@ from telegram import (
 )
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def inline_query_result_gif():
     return InlineQueryResultGif(
         TestInlineQueryResultGif.id_,
@@ -48,29 +48,29 @@ def inline_query_result_gif():
 
 
 class TestInlineQueryResultGif:
-    id_ = 'id'
-    type_ = 'gif'
-    gif_url = 'gif url'
+    id_ = "id"
+    type_ = "gif"
+    gif_url = "gif url"
     gif_width = 10
     gif_height = 15
     gif_duration = 1
-    thumb_url = 'thumb url'
-    thumb_mime_type = 'image/jpeg'
-    title = 'title'
-    caption = 'caption'
-    parse_mode = 'HTML'
+    thumb_url = "thumb url"
+    thumb_mime_type = "image/jpeg"
+    title = "title"
+    caption = "caption"
+    parse_mode = "HTML"
     caption_entities = [MessageEntity(MessageEntity.ITALIC, 0, 7)]
-    input_message_content = InputTextMessageContent('input_message_content')
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('reply_markup')]])
+    input_message_content = InputTextMessageContent("input_message_content")
+    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("reply_markup")]])
 
     def test_slot_behaviour(self, inline_query_result_gif, recwarn, mro_slots):
         inst = inline_query_result_gif
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.id = 'should give warning', self.id_
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.id = "should give warning", self.id_
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     def test_expected_values(self, inline_query_result_gif):
         assert inline_query_result_gif.type == self.type_
@@ -95,38 +95,38 @@ class TestInlineQueryResultGif:
         inline_query_result_gif_dict = inline_query_result_gif.to_dict()
 
         assert isinstance(inline_query_result_gif_dict, dict)
-        assert inline_query_result_gif_dict['type'] == inline_query_result_gif.type
-        assert inline_query_result_gif_dict['id'] == inline_query_result_gif.id
-        assert inline_query_result_gif_dict['gif_url'] == inline_query_result_gif.gif_url
-        assert inline_query_result_gif_dict['gif_width'] == inline_query_result_gif.gif_width
-        assert inline_query_result_gif_dict['gif_height'] == inline_query_result_gif.gif_height
-        assert inline_query_result_gif_dict['gif_duration'] == inline_query_result_gif.gif_duration
-        assert inline_query_result_gif_dict['thumb_url'] == inline_query_result_gif.thumb_url
+        assert inline_query_result_gif_dict["type"] == inline_query_result_gif.type
+        assert inline_query_result_gif_dict["id"] == inline_query_result_gif.id
+        assert inline_query_result_gif_dict["gif_url"] == inline_query_result_gif.gif_url
+        assert inline_query_result_gif_dict["gif_width"] == inline_query_result_gif.gif_width
+        assert inline_query_result_gif_dict["gif_height"] == inline_query_result_gif.gif_height
+        assert inline_query_result_gif_dict["gif_duration"] == inline_query_result_gif.gif_duration
+        assert inline_query_result_gif_dict["thumb_url"] == inline_query_result_gif.thumb_url
         assert (
-            inline_query_result_gif_dict['thumb_mime_type']
+            inline_query_result_gif_dict["thumb_mime_type"]
             == inline_query_result_gif.thumb_mime_type
         )
-        assert inline_query_result_gif_dict['title'] == inline_query_result_gif.title
-        assert inline_query_result_gif_dict['caption'] == inline_query_result_gif.caption
-        assert inline_query_result_gif_dict['parse_mode'] == inline_query_result_gif.parse_mode
-        assert inline_query_result_gif_dict['caption_entities'] == [
+        assert inline_query_result_gif_dict["title"] == inline_query_result_gif.title
+        assert inline_query_result_gif_dict["caption"] == inline_query_result_gif.caption
+        assert inline_query_result_gif_dict["parse_mode"] == inline_query_result_gif.parse_mode
+        assert inline_query_result_gif_dict["caption_entities"] == [
             ce.to_dict() for ce in inline_query_result_gif.caption_entities
         ]
         assert (
-            inline_query_result_gif_dict['input_message_content']
+            inline_query_result_gif_dict["input_message_content"]
             == inline_query_result_gif.input_message_content.to_dict()
         )
         assert (
-            inline_query_result_gif_dict['reply_markup']
+            inline_query_result_gif_dict["reply_markup"]
             == inline_query_result_gif.reply_markup.to_dict()
         )
 
     def test_equality(self):
         a = InlineQueryResultGif(self.id_, self.gif_url, self.thumb_url)
         b = InlineQueryResultGif(self.id_, self.gif_url, self.thumb_url)
-        c = InlineQueryResultGif(self.id_, '', self.thumb_url)
-        d = InlineQueryResultGif('', self.gif_url, self.thumb_url)
-        e = InlineQueryResultVoice(self.id_, '', '')
+        c = InlineQueryResultGif(self.id_, "", self.thumb_url)
+        d = InlineQueryResultGif("", self.gif_url, self.thumb_url)
+        e = InlineQueryResultVoice(self.id_, "", "")
 
         assert a == b
         assert hash(a) == hash(b)

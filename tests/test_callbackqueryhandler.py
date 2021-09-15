@@ -34,39 +34,39 @@ from telegram import (
 )
 from telegram.ext import CallbackQueryHandler, CallbackContext, JobQueue
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'message': message},
-    {'edited_message': message},
-    {'channel_post': message},
-    {'edited_channel_post': message},
-    {'inline_query': InlineQuery(1, User(1, '', False), '', '')},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'pre_checkout_query': PreCheckoutQuery('id', User(1, '', False), '', 0, '')},
+    {"message": message},
+    {"edited_message": message},
+    {"channel_post": message},
+    {"edited_channel_post": message},
+    {"inline_query": InlineQuery(1, User(1, "", False), "", "")},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"pre_checkout_query": PreCheckoutQuery("id", User(1, "", False), "", 0, "")},
 ]
 
 ids = (
-    'message',
-    'edited_message',
-    'channel_post',
-    'edited_channel_post',
-    'inline_query',
-    'chosen_inline_result',
-    'shipping_query',
-    'pre_checkout_query',
+    "message",
+    "edited_message",
+    "channel_post",
+    "edited_channel_post",
+    "inline_query",
+    "chosen_inline_result",
+    "shipping_query",
+    "pre_checkout_query",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=2, **request.param)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def callback_query(bot):
-    return Update(0, callback_query=CallbackQuery(2, User(1, '', False), None, data='test data'))
+    return Update(0, callback_query=CallbackQuery(2, User(1, "", False), None, data="test data"))
 
 
 class TestCallbackQueryHandler:
@@ -75,11 +75,11 @@ class TestCallbackQueryHandler:
     def test_slot_behaviour(self, recwarn, mro_slots):
         handler = CallbackQueryHandler(self.callback_data_1, pass_user_data=True)
         for attr in handler.__slots__:
-            assert getattr(handler, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(handler, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not handler.__dict__, f"got missing slot(s): {handler.__dict__}"
         assert len(mro_slots(handler)) == len(set(mro_slots(handler))), "duplicate slot"
-        handler.custom, handler.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        handler.custom, handler.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -104,9 +104,9 @@ class TestCallbackQueryHandler:
 
     def callback_group(self, bot, update, groups=None, groupdict=None):
         if groups is not None:
-            self.test_flag = groups == ('t', ' data')
+            self.test_flag = groups == ("t", " data")
         if groupdict is not None:
-            self.test_flag = groupdict == {'begin': 't', 'end': ' data'}
+            self.test_flag = groupdict == {"begin": "t", "end": " data"}
 
     def callback_context(self, update, context):
         self.test_flag = (
@@ -123,9 +123,9 @@ class TestCallbackQueryHandler:
 
     def callback_context_pattern(self, update, context):
         if context.matches[0].groups():
-            self.test_flag = context.matches[0].groups() == ('t', ' data')
+            self.test_flag = context.matches[0].groups() == ("t", " data")
         if context.matches[0].groupdict():
-            self.test_flag = context.matches[0].groupdict() == {'begin': 't', 'end': ' data'}
+            self.test_flag = context.matches[0].groupdict() == {"begin": "t", "end": " data"}
 
     def test_basic(self, dp, callback_query):
         handler = CallbackQueryHandler(self.callback_basic)
@@ -137,11 +137,11 @@ class TestCallbackQueryHandler:
         assert self.test_flag
 
     def test_with_pattern(self, callback_query):
-        handler = CallbackQueryHandler(self.callback_basic, pattern='.*est.*')
+        handler = CallbackQueryHandler(self.callback_basic, pattern=".*est.*")
 
         assert handler.check_update(callback_query)
 
-        callback_query.callback_query.data = 'nothing here'
+        callback_query.callback_query.data = "nothing here"
         assert not handler.check_update(callback_query)
 
         callback_query.callback_query.data = None
@@ -159,7 +159,7 @@ class TestCallbackQueryHandler:
 
         callback_query.callback_query.data = CallbackData()
         assert handler.check_update(callback_query)
-        callback_query.callback_query.data = 'callback_data'
+        callback_query.callback_query.data = "callback_data"
         assert not handler.check_update(callback_query)
 
     def test_with_type_pattern(self, callback_query):
@@ -170,19 +170,19 @@ class TestCallbackQueryHandler:
 
         callback_query.callback_query.data = CallbackData()
         assert handler.check_update(callback_query)
-        callback_query.callback_query.data = 'callback_data'
+        callback_query.callback_query.data = "callback_data"
         assert not handler.check_update(callback_query)
 
         handler = CallbackQueryHandler(self.callback_basic, pattern=bool)
 
         callback_query.callback_query.data = False
         assert handler.check_update(callback_query)
-        callback_query.callback_query.data = 'callback_data'
+        callback_query.callback_query.data = "callback_data"
         assert not handler.check_update(callback_query)
 
     def test_with_passing_group_dict(self, dp, callback_query):
         handler = CallbackQueryHandler(
-            self.callback_group, pattern='(?P<begin>.*)est(?P<end>.*)', pass_groups=True
+            self.callback_group, pattern="(?P<begin>.*)est(?P<end>.*)", pass_groups=True
         )
         dp.add_handler(handler)
 
@@ -191,7 +191,7 @@ class TestCallbackQueryHandler:
 
         dp.remove_handler(handler)
         handler = CallbackQueryHandler(
-            self.callback_group, pattern='(?P<begin>.*)est(?P<end>.*)', pass_groupdict=True
+            self.callback_group, pattern="(?P<begin>.*)est(?P<end>.*)", pass_groupdict=True
         )
         dp.add_handler(handler)
 
@@ -262,7 +262,7 @@ class TestCallbackQueryHandler:
 
     def test_context_pattern(self, cdp, callback_query):
         handler = CallbackQueryHandler(
-            self.callback_context_pattern, pattern=r'(?P<begin>.*)est(?P<end>.*)'
+            self.callback_context_pattern, pattern=r"(?P<begin>.*)est(?P<end>.*)"
         )
         cdp.add_handler(handler)
 
@@ -270,7 +270,7 @@ class TestCallbackQueryHandler:
         assert self.test_flag
 
         cdp.remove_handler(handler)
-        handler = CallbackQueryHandler(self.callback_context_pattern, pattern=r'(t)est(.*)')
+        handler = CallbackQueryHandler(self.callback_context_pattern, pattern=r"(t)est(.*)")
         cdp.add_handler(handler)
 
         cdp.process_update(callback_query)

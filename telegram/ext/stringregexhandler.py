@@ -29,7 +29,7 @@ from .utils.types import CCT
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
+RT = TypeVar("RT")
 
 
 class StringRegexHandler(Handler[str, CCT]):
@@ -92,7 +92,7 @@ class StringRegexHandler(Handler[str, CCT]):
 
     """
 
-    __slots__ = ('pass_groups', 'pass_groupdict', 'pattern')
+    __slots__ = ("pass_groups", "pass_groupdict", "pattern")
 
     def __init__(
         self,
@@ -136,7 +136,7 @@ class StringRegexHandler(Handler[str, CCT]):
 
     def collect_optional_args(
         self,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         update: str = None,
         check_result: Optional[Match] = None,
     ) -> Dict[str, object]:
@@ -147,16 +147,16 @@ class StringRegexHandler(Handler[str, CCT]):
         optional_args = super().collect_optional_args(dispatcher, update, check_result)
         if self.pattern:
             if self.pass_groups and check_result:
-                optional_args['groups'] = check_result.groups()
+                optional_args["groups"] = check_result.groups()
             if self.pass_groupdict and check_result:
-                optional_args['groupdict'] = check_result.groupdict()
+                optional_args["groupdict"] = check_result.groupdict()
         return optional_args
 
     def collect_additional_context(
         self,
         context: CCT,
         update: str,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: Optional[Match],
     ) -> None:
         """Add the result of ``re.match(pattern, update)`` to :attr:`CallbackContext.matches` as

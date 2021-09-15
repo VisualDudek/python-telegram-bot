@@ -33,7 +33,7 @@ from .handler import Handler
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
+RT = TypeVar("RT")
 
 
 class CommandHandler(Handler[Update, CCT]):
@@ -130,7 +130,7 @@ class CommandHandler(Handler[Update, CCT]):
         run_async (:obj:`bool`): Determines whether the callback will run asynchronously.
     """
 
-    __slots__ = ('command', 'filters', 'pass_args')
+    __slots__ = ("command", "filters", "pass_args")
 
     def __init__(
         self,
@@ -159,8 +159,8 @@ class CommandHandler(Handler[Update, CCT]):
         else:
             self.command = [x.lower() for x in command]
         for comm in self.command:
-            if not re.match(r'^[\da-z_]{1,32}$', comm):
-                raise ValueError('Command is not a valid bot command')
+            if not re.match(r"^[\da-z_]{1,32}$", comm):
+                raise ValueError("Command is not a valid bot command")
 
         if filters:
             self.filters = Filters.update.messages & filters
@@ -169,7 +169,7 @@ class CommandHandler(Handler[Update, CCT]):
 
         if allow_edited is not None:
             warnings.warn(
-                'allow_edited is deprecated. See https://git.io/fxJuV for more info',
+                "allow_edited is deprecated. See https://git.io/fxJuV for more info",
                 TelegramDeprecationWarning,
                 stacklevel=2,
             )
@@ -201,7 +201,7 @@ class CommandHandler(Handler[Update, CCT]):
             ):
                 command = message.text[1 : message.entities[0].length]
                 args = message.text.split()[1:]
-                command_parts = command.split('@')
+                command_parts = command.split("@")
                 command_parts.append(message.bot.username)
 
                 if not (
@@ -218,7 +218,7 @@ class CommandHandler(Handler[Update, CCT]):
 
     def collect_optional_args(
         self,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         update: Update = None,
         check_result: Optional[Union[bool, Tuple[List[str], Optional[bool]]]] = None,
     ) -> Dict[str, object]:
@@ -227,14 +227,14 @@ class CommandHandler(Handler[Update, CCT]):
         """
         optional_args = super().collect_optional_args(dispatcher, update)
         if self.pass_args and isinstance(check_result, tuple):
-            optional_args['args'] = check_result[0]
+            optional_args["args"] = check_result[0]
         return optional_args
 
     def collect_additional_context(
         self,
         context: CCT,
         update: Update,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: Optional[Union[bool, Tuple[List[str], Optional[bool]]]],
     ) -> None:
         """Add text after the command to :attr:`CallbackContext.args` as list, split on single
@@ -354,7 +354,7 @@ class PrefixHandler(CommandHandler):
     """
 
     # 'prefix' is a class property, & 'command' is included in the superclass, so they're left out.
-    __slots__ = ('_prefix', '_command', '_commands')
+    __slots__ = ("_prefix", "_command", "_commands")
 
     def __init__(
         self,
@@ -375,7 +375,7 @@ class PrefixHandler(CommandHandler):
         self._commands: List[str] = []
 
         super().__init__(
-            'nocommand',
+            "nocommand",
             callback,
             filters=filters,
             allow_edited=None,

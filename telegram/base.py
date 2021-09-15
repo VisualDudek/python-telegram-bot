@@ -31,7 +31,7 @@ from telegram.utils.deprecate import set_new_attribute_deprecated
 if TYPE_CHECKING:
     from telegram import Bot
 
-TO = TypeVar('TO', bound='TelegramObject', covariant=True)
+TO = TypeVar("TO", bound="TelegramObject", covariant=True)
 
 
 class TelegramObject:
@@ -42,7 +42,7 @@ class TelegramObject:
     # Adding slots reduces memory usage & allows for faster attribute access.
     # Only instance variables should be added to __slots__.
     # We add __dict__ here for backward compatibility & also to avoid repetition for subclasses.
-    __slots__ = ('__dict__',)
+    __slots__ = ("__dict__",)
 
     def __str__(self) -> str:
         return str(self.to_dict())
@@ -58,7 +58,7 @@ class TelegramObject:
         return None if data is None else data.copy()
 
     @classmethod
-    def de_json(cls: Type[TO], data: Optional[JSONDict], bot: 'Bot') -> Optional[TO]:
+    def de_json(cls: Type[TO], data: Optional[JSONDict], bot: "Bot") -> Optional[TO]:
         """Converts JSON data to a Telegram object.
 
         Args:
@@ -79,7 +79,7 @@ class TelegramObject:
         return cls(bot=bot, **data)  # type: ignore[call-arg]
 
     @classmethod
-    def de_list(cls: Type[TO], data: Optional[List[JSONDict]], bot: 'Bot') -> List[Optional[TO]]:
+    def de_list(cls: Type[TO], data: Optional[List[JSONDict]], bot: "Bot") -> List[Optional[TO]]:
         """Converts JSON data to a list of Telegram objects.
 
         Args:
@@ -117,18 +117,18 @@ class TelegramObject:
         # TelegramObject class itself.
         attrs = {attr for cls in self.__class__.__mro__[:-2] for attr in cls.__slots__}
         for key in attrs:
-            if key == 'bot' or key.startswith('_'):
+            if key == "bot" or key.startswith("_"):
                 continue
 
             value = getattr(self, key, None)
             if value is not None:
-                if hasattr(value, 'to_dict'):
+                if hasattr(value, "to_dict"):
                     data[key] = value.to_dict()
                 else:
                     data[key] = value
 
-        if data.get('from_user'):
-            data['from'] = data.pop('from_user', None)
+        if data.get("from_user"):
+            data["from"] = data.pop("from_user", None)
         return data
 
     def __eq__(self, other: object) -> bool:

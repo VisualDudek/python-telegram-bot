@@ -36,35 +36,35 @@ from telegram import (
 )
 from telegram.ext import Filters, MessageHandler, CallbackContext, JobQueue, UpdateFilter
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat', message=message)},
-    {'inline_query': InlineQuery(1, User(1, '', False), '', '')},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'pre_checkout_query': PreCheckoutQuery('id', User(1, '', False), '', 0, '')},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat')},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat", message=message)},
+    {"inline_query": InlineQuery(1, User(1, "", False), "", "")},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"pre_checkout_query": PreCheckoutQuery("id", User(1, "", False), "", 0, "")},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat")},
 ]
 
 ids = (
-    'callback_query',
-    'inline_query',
-    'chosen_inline_result',
-    'shipping_query',
-    'pre_checkout_query',
-    'callback_query_without_message',
+    "callback_query",
+    "inline_query",
+    "chosen_inline_result",
+    "shipping_query",
+    "pre_checkout_query",
+    "callback_query_without_message",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=1, **request.param)
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def message(bot):
-    return Message(1, None, Chat(1, ''), from_user=User(1, '', False), bot=bot)
+    return Message(1, None, Chat(1, ""), from_user=User(1, "", False), bot=bot)
 
 
 class TestMessageHandler:
@@ -74,11 +74,11 @@ class TestMessageHandler:
     def test_slot_behaviour(self, recwarn, mro_slots):
         handler = MessageHandler(Filters.all, self.callback_basic)
         for attr in handler.__slots__:
-            assert getattr(handler, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(handler, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not handler.__dict__, f"got missing slot(s): {handler.__dict__}"
         assert len(mro_slots(handler)) == len(set(mro_slots(handler))), "duplicate slot"
-        handler.custom, handler.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        handler.custom, handler.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -149,11 +149,11 @@ class TestMessageHandler:
         assert self.test_flag
 
     def test_deprecation_warning(self):
-        with pytest.warns(TelegramDeprecationWarning, match='See https://git.io/fxJuV'):
+        with pytest.warns(TelegramDeprecationWarning, match="See https://git.io/fxJuV"):
             MessageHandler(None, self.callback_basic, edited_updates=True)
-        with pytest.warns(TelegramDeprecationWarning, match='See https://git.io/fxJuV'):
+        with pytest.warns(TelegramDeprecationWarning, match="See https://git.io/fxJuV"):
             MessageHandler(None, self.callback_basic, message_updates=False)
-        with pytest.warns(TelegramDeprecationWarning, match='See https://git.io/fxJuV'):
+        with pytest.warns(TelegramDeprecationWarning, match="See https://git.io/fxJuV"):
             MessageHandler(None, self.callback_basic, channel_post_updates=True)
 
     def test_edited_deprecated(self, message):
@@ -198,7 +198,7 @@ class TestMessageHandler:
         assert handler.check_update(Update(0, edited_channel_post=message))
 
     def test_none_allowed_deprecated(self):
-        with pytest.raises(ValueError, match='are all False'):
+        with pytest.raises(ValueError, match="are all False"):
             MessageHandler(
                 None,
                 self.callback_basic,
@@ -210,10 +210,10 @@ class TestMessageHandler:
     def test_with_filter(self, message):
         handler = MessageHandler(Filters.group, self.callback_basic)
 
-        message.chat.type = 'group'
+        message.chat.type = "group"
         assert handler.check_update(Update(0, message))
 
-        message.chat.type = 'private'
+        message.chat.type = "private"
         assert not handler.check_update(Update(0, message))
 
     def test_callback_query_with_filter(self, message):
@@ -321,27 +321,27 @@ class TestMessageHandler:
         assert self.test_flag
 
     def test_context_regex(self, cdp, message):
-        handler = MessageHandler(Filters.regex('one two'), self.callback_context_regex1)
+        handler = MessageHandler(Filters.regex("one two"), self.callback_context_regex1)
         cdp.add_handler(handler)
 
-        message.text = 'not it'
+        message.text = "not it"
         cdp.process_update(Update(0, message))
         assert not self.test_flag
 
-        message.text += ' one two now it is'
+        message.text += " one two now it is"
         cdp.process_update(Update(0, message))
         assert self.test_flag
 
     def test_context_multiple_regex(self, cdp, message):
         handler = MessageHandler(
-            Filters.regex('one') & Filters.regex('two'), self.callback_context_regex2
+            Filters.regex("one") & Filters.regex("two"), self.callback_context_regex2
         )
         cdp.add_handler(handler)
 
-        message.text = 'not it'
+        message.text = "not it"
         cdp.process_update(Update(0, message))
         assert not self.test_flag
 
-        message.text += ' one two now it is'
+        message.text += " one two now it is"
         cdp.process_update(Update(0, message))
         assert self.test_flag

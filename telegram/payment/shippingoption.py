@@ -46,13 +46,13 @@ class ShippingOption(TelegramObject):
 
     """
 
-    __slots__ = ('prices', 'title', 'id', '_id_attrs')
+    __slots__ = ("prices", "title", "id", "_id_attrs")
 
     def __init__(
         self,
         id: str,  # pylint: disable=W0622
         title: str,
-        prices: List['LabeledPrice'],
+        prices: List["LabeledPrice"],
         **_kwargs: Any,
     ):
         self.id = id  # pylint: disable=C0103
@@ -65,6 +65,6 @@ class ShippingOption(TelegramObject):
         """See :meth:`telegram.TelegramObject.to_dict`."""
         data = super().to_dict()
 
-        data['prices'] = [p.to_dict() for p in self.prices]
+        data["prices"] = [p.to_dict() for p in self.prices]
 
         return data

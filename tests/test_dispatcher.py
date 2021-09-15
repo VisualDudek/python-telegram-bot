@@ -41,7 +41,7 @@ from tests.conftest import create_dp
 from collections import defaultdict
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def dp2(bot):
     yield from create_dp(bot)
 
@@ -52,31 +52,31 @@ class CustomContext(CallbackContext):
 
 class TestDispatcher:
     message_update = Update(
-        1, message=Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+        1, message=Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
     )
     received = None
     count = 0
 
     def test_slot_behaviour(self, dp2, recwarn, mro_slots):
         for at in dp2.__slots__:
-            at = f"_Dispatcher{at}" if at.startswith('__') and not at.endswith('__') else at
-            assert getattr(dp2, at, 'err') != 'err', f"got extra slot '{at}'"
+            at = f"_Dispatcher{at}" if at.startswith("__") and not at.endswith("__") else at
+            assert getattr(dp2, at, "err") != "err", f"got extra slot '{at}'"
         assert not dp2.__dict__, f"got missing slot(s): {dp2.__dict__}"
         assert len(mro_slots(dp2)) == len(set(mro_slots(dp2))), "duplicate slot"
-        dp2.custom, dp2.running = 'should give warning', dp2.running
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        dp2.custom, dp2.running = "should give warning", dp2.running
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
         class CustomDispatcher(Dispatcher):
             pass  # Tests that setting custom attrs of Dispatcher subclass doesn't raise warning
 
         a = CustomDispatcher(None, None)
-        a.my_custom = 'no error!'
+        a.my_custom = "no error!"
         assert len(recwarn) == 1
 
-        dp2.__setattr__('__test', 'mangled success')
-        assert getattr(dp2, '_Dispatcher__test', 'e') == 'mangled success', "mangling failed"
+        dp2.__setattr__("__test", "mangled success")
+        assert getattr(dp2, "_Dispatcher__test", "e") == "mangled success", "mangling failed"
 
-    @pytest.fixture(autouse=True, name='reset')
+    @pytest.fixture(autouse=True, name="reset")
     def reset_fixture(self):
         self.reset()
 
@@ -91,7 +91,7 @@ class TestDispatcher:
         self.received = context.error.message
 
     def error_handler_raise_error(self, bot, update, error):
-        raise Exception('Failing bigly')
+        raise Exception("Failing bigly")
 
     def callback_increase_count(self, bot, update):
         self.count += 1
@@ -126,35 +126,35 @@ class TestDispatcher:
         assert len(recwarn) == 1
         assert (
             str(recwarn[0].message)
-            == 'Asynchronous callbacks can not be processed without at least one worker thread.'
+            == "Asynchronous callbacks can not be processed without at least one worker thread."
         )
 
     def test_one_context_per_update(self, cdp):
         def one(update, context):
-            if update.message.text == 'test':
+            if update.message.text == "test":
                 context.my_flag = True
 
         def two(update, context):
-            if update.message.text == 'test':
-                if not hasattr(context, 'my_flag'):
+            if update.message.text == "test":
+                if not hasattr(context, "my_flag"):
                     pytest.fail()
             else:
-                if hasattr(context, 'my_flag'):
+                if hasattr(context, "my_flag"):
                     pytest.fail()
 
-        cdp.add_handler(MessageHandler(Filters.regex('test'), one), group=1)
+        cdp.add_handler(MessageHandler(Filters.regex("test"), one), group=1)
         cdp.add_handler(MessageHandler(None, two), group=2)
-        u = Update(1, Message(1, None, None, None, text='test'))
+        u = Update(1, Message(1, None, None, None, text="test"))
         cdp.process_update(u)
-        u.message.text = 'something'
+        u.message.text = "something"
         cdp.process_update(u)
 
     def test_error_handler(self, dp):
         dp.add_error_handler(self.error_handler)
-        error = TelegramError('Unauthorized.')
+        error = TelegramError("Unauthorized.")
         dp.update_queue.put(error)
         sleep(0.1)
-        assert self.received == 'Unauthorized.'
+        assert self.received == "Unauthorized."
 
         # Remove handler
         dp.remove_error_handler(self.error_handler)
@@ -169,7 +169,7 @@ class TestDispatcher:
         with caplog.at_level(logging.DEBUG):
             dp.add_error_handler(self.error_handler)
             assert len(caplog.records) == 1
-            assert caplog.records[-1].getMessage().startswith('The callback is already registered')
+            assert caplog.records[-1].getMessage().startswith("The callback is already registered")
 
     def test_construction_with_bad_persistence(self, caplog, bot):
         class my_per:
@@ -180,7 +180,7 @@ class TestDispatcher:
                 self.store_callback_data = False
 
         with pytest.raises(
-            TypeError, match='persistence must be based on telegram.ext.BasePersistence'
+            TypeError, match="persistence must be based on telegram.ext.BasePersistence"
         ):
             Dispatcher(bot, None, persistence=my_per())
 
@@ -190,7 +190,7 @@ class TestDispatcher:
         """
         handler_raise_error = MessageHandler(Filters.all, self.callback_raise_error)
         handler_increase_count = MessageHandler(Filters.all, self.callback_increase_count)
-        error = TelegramError('Unauthorized.')
+        error = TelegramError("Unauthorized.")
 
         dp.add_error_handler(self.error_handler_raise_error)
 
@@ -208,7 +208,7 @@ class TestDispatcher:
 
         assert self.count == 1
 
-    @pytest.mark.parametrize(['run_async', 'expected_output'], [(True, 5), (False, 0)])
+    @pytest.mark.parametrize(["run_async", "expected_output"], [(True, 5), (False, 0)])
     def test_default_run_async_error_handler(self, dp, monkeypatch, run_async, expected_output):
         def mock_async_err_handler(*args, **kwargs):
             self.count = 5
@@ -219,7 +219,7 @@ class TestDispatcher:
             dp.add_handler(MessageHandler(Filters.all, self.callback_raise_error))
             dp.add_error_handler(self.error_handler)
 
-            monkeypatch.setattr(dp, 'run_async', mock_async_err_handler)
+            monkeypatch.setattr(dp, "run_async", mock_async_err_handler)
             dp.process_update(self.message_update)
 
             assert self.count == expected_output
@@ -229,17 +229,17 @@ class TestDispatcher:
             dp.bot.defaults = None
 
     @pytest.mark.parametrize(
-        ['run_async', 'expected_output'], [(True, 'running async'), (False, None)]
+        ["run_async", "expected_output"], [(True, "running async"), (False, None)]
     )
     def test_default_run_async(self, monkeypatch, dp, run_async, expected_output):
         def mock_run_async(*args, **kwargs):
-            self.received = 'running async'
+            self.received = "running async"
 
         # set defaults value to dp.bot
         dp.bot.defaults = Defaults(run_async=run_async)
         try:
             dp.add_handler(MessageHandler(Filters.all, lambda u, c: None))
-            monkeypatch.setattr(dp, 'run_async', mock_run_async)
+            monkeypatch.setattr(dp, "run_async", mock_run_async)
             dp.process_update(self.message_update)
             assert self.received == expected_output
 
@@ -297,7 +297,7 @@ class TestDispatcher:
 
         dp.add_handler(MessageHandler(Filters.all, callback))
 
-        with pytest.warns(TelegramDeprecationWarning, match='@run_async decorator'):
+        with pytest.warns(TelegramDeprecationWarning, match="@run_async decorator"):
             dp.process_update(self.message_update)
 
     def test_async_raises_dispatcher_handler_stop(self, dp, caplog):
@@ -314,13 +314,13 @@ class TestDispatcher:
             assert (
                 caplog.records[-1]
                 .getMessage()
-                .startswith('DispatcherHandlerStop is not supported ' 'with async functions')
+                .startswith("DispatcherHandlerStop is not supported " "with async functions")
             )
 
     def test_async_raises_exception(self, dp, caplog):
         @run_async
         def callback(update, context):
-            raise RuntimeError('async raising exception')
+            raise RuntimeError("async raising exception")
 
         dp.add_handler(MessageHandler(Filters.all, callback))
 
@@ -331,7 +331,7 @@ class TestDispatcher:
             assert (
                 caplog.records[-1]
                 .getMessage()
-                .startswith('A promise with deactivated error handling')
+                .startswith("A promise with deactivated error handling")
             )
 
     def test_add_async_handler(self, dp):
@@ -350,13 +350,13 @@ class TestDispatcher:
 
     def test_run_async_no_error_handler(self, dp, caplog):
         def func():
-            raise RuntimeError('Async Error')
+            raise RuntimeError("Async Error")
 
         with caplog.at_level(logging.ERROR):
             dp.run_async(func)
             sleep(0.1)
             assert len(caplog.records) == 1
-            assert caplog.records[-1].getMessage().startswith('No error handlers are registered')
+            assert caplog.records[-1].getMessage().startswith("No error handlers are registered")
 
     def test_async_handler_error_handler(self, dp):
         dp.add_handler(MessageHandler(Filters.all, self.callback_raise_error, run_async=True))
@@ -383,7 +383,7 @@ class TestDispatcher:
             dp.update_queue.put(self.message_update)
             sleep(0.1)
             assert len(caplog.records) == 1
-            assert caplog.records[-1].getMessage().startswith('An uncaught error was raised')
+            assert caplog.records[-1].getMessage().startswith("An uncaught error was raised")
 
         # Make sure that the main loop still runs
         dp.remove_handler(handler)
@@ -401,7 +401,7 @@ class TestDispatcher:
             dp.update_queue.put(self.message_update)
             sleep(0.1)
             assert len(caplog.records) == 1
-            assert caplog.records[-1].getMessage().startswith('An uncaught error was raised')
+            assert caplog.records[-1].getMessage().startswith("An uncaught error was raised")
 
         # Make sure that the main loop still runs
         dp.remove_handler(handler)
@@ -457,29 +457,29 @@ class TestDispatcher:
         assert self.count == 3
 
     def test_add_handler_errors(self, dp):
-        handler = 'not a handler'
-        with pytest.raises(TypeError, match='handler is not an instance of'):
+        handler = "not a handler"
+        with pytest.raises(TypeError, match="handler is not an instance of"):
             dp.add_handler(handler)
 
         handler = MessageHandler(Filters.photo, self.callback_set_count(1))
-        with pytest.raises(TypeError, match='group is not int'):
-            dp.add_handler(handler, 'one')
+        with pytest.raises(TypeError, match="group is not int"):
+            dp.add_handler(handler, "one")
 
     def test_flow_stop(self, dp, bot):
         passed = []
 
         def start1(b, u):
-            passed.append('start1')
+            passed.append("start1")
             raise DispatcherHandlerStop
 
         def start2(b, u):
-            passed.append('start2')
+            passed.append("start2")
 
         def start3(b, u):
-            passed.append('start3')
+            passed.append("start3")
 
         def error(b, u, e):
-            passed.append('error')
+            passed.append("error")
             passed.append(e)
 
         update = Update(
@@ -489,9 +489,9 @@ class TestDispatcher:
                 None,
                 None,
                 None,
-                text='/start',
+                text="/start",
                 entities=[
-                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len('/start'))
+                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len("/start"))
                 ],
                 bot=bot,
             ),
@@ -499,28 +499,28 @@ class TestDispatcher:
 
         # If Stop raised handlers in other groups should not be called.
         passed = []
-        dp.add_handler(CommandHandler('start', start1), 1)
-        dp.add_handler(CommandHandler('start', start3), 1)
-        dp.add_handler(CommandHandler('start', start2), 2)
+        dp.add_handler(CommandHandler("start", start1), 1)
+        dp.add_handler(CommandHandler("start", start3), 1)
+        dp.add_handler(CommandHandler("start", start2), 2)
         dp.process_update(update)
-        assert passed == ['start1']
+        assert passed == ["start1"]
 
     def test_exception_in_handler(self, dp, bot):
         passed = []
-        err = Exception('General exception')
+        err = Exception("General exception")
 
         def start1(b, u):
-            passed.append('start1')
+            passed.append("start1")
             raise err
 
         def start2(b, u):
-            passed.append('start2')
+            passed.append("start2")
 
         def start3(b, u):
-            passed.append('start3')
+            passed.append("start3")
 
         def error(b, u, e):
-            passed.append('error')
+            passed.append("error")
             passed.append(e)
 
         update = Update(
@@ -530,9 +530,9 @@ class TestDispatcher:
                 None,
                 None,
                 None,
-                text='/start',
+                text="/start",
                 entities=[
-                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len('/start'))
+                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len("/start"))
                 ],
                 bot=bot,
             ),
@@ -541,29 +541,29 @@ class TestDispatcher:
         # If an unhandled exception was caught, no further handlers from the same group should be
         # called. Also, the error handler should be called and receive the exception
         passed = []
-        dp.add_handler(CommandHandler('start', start1), 1)
-        dp.add_handler(CommandHandler('start', start2), 1)
-        dp.add_handler(CommandHandler('start', start3), 2)
+        dp.add_handler(CommandHandler("start", start1), 1)
+        dp.add_handler(CommandHandler("start", start2), 1)
+        dp.add_handler(CommandHandler("start", start3), 2)
         dp.add_error_handler(error)
         dp.process_update(update)
-        assert passed == ['start1', 'error', err, 'start3']
+        assert passed == ["start1", "error", err, "start3"]
 
     def test_telegram_error_in_handler(self, dp, bot):
         passed = []
-        err = TelegramError('Telegram error')
+        err = TelegramError("Telegram error")
 
         def start1(b, u):
-            passed.append('start1')
+            passed.append("start1")
             raise err
 
         def start2(b, u):
-            passed.append('start2')
+            passed.append("start2")
 
         def start3(b, u):
-            passed.append('start3')
+            passed.append("start3")
 
         def error(b, u, e):
-            passed.append('error')
+            passed.append("error")
             passed.append(e)
 
         update = Update(
@@ -573,9 +573,9 @@ class TestDispatcher:
                 None,
                 None,
                 None,
-                text='/start',
+                text="/start",
                 entities=[
-                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len('/start'))
+                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len("/start"))
                 ],
                 bot=bot,
             ),
@@ -583,12 +583,12 @@ class TestDispatcher:
 
         # If a TelegramException was caught, an error handler should be called and no further
         # handlers from the same group should be called.
-        dp.add_handler(CommandHandler('start', start1), 1)
-        dp.add_handler(CommandHandler('start', start2), 1)
-        dp.add_handler(CommandHandler('start', start3), 2)
+        dp.add_handler(CommandHandler("start", start1), 1)
+        dp.add_handler(CommandHandler("start", start2), 1)
+        dp.add_handler(CommandHandler("start", start3), 2)
         dp.add_error_handler(error)
         dp.process_update(update)
-        assert passed == ['start1', 'error', err, 'start3']
+        assert passed == ["start1", "error", err, "start3"]
         assert passed[2] is err
 
     def test_error_while_saving_chat_data(self, bot):
@@ -648,36 +648,36 @@ class TestDispatcher:
                 None,
                 Chat(1, "lala"),
                 from_user=User(1, "Test", False),
-                text='/start',
+                text="/start",
                 entities=[
-                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len('/start'))
+                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len("/start"))
                 ],
                 bot=bot,
             ),
         )
         my_persistence = OwnPersistence()
         dp = Dispatcher(bot, None, persistence=my_persistence, use_context=False)
-        dp.add_handler(CommandHandler('start', start1))
+        dp.add_handler(CommandHandler("start", start1))
         dp.add_error_handler(error)
         dp.process_update(update)
         assert increment == ["error", "error", "error", "error"]
 
     def test_flow_stop_in_error_handler(self, dp, bot):
         passed = []
-        err = TelegramError('Telegram error')
+        err = TelegramError("Telegram error")
 
         def start1(b, u):
-            passed.append('start1')
+            passed.append("start1")
             raise err
 
         def start2(b, u):
-            passed.append('start2')
+            passed.append("start2")
 
         def start3(b, u):
-            passed.append('start3')
+            passed.append("start3")
 
         def error(b, u, e):
-            passed.append('error')
+            passed.append("error")
             passed.append(e)
             raise DispatcherHandlerStop
 
@@ -688,9 +688,9 @@ class TestDispatcher:
                 None,
                 None,
                 None,
-                text='/start',
+                text="/start",
                 entities=[
-                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len('/start'))
+                    MessageEntity(type=MessageEntity.BOT_COMMAND, offset=0, length=len("/start"))
                 ],
                 bot=bot,
             ),
@@ -698,21 +698,21 @@ class TestDispatcher:
 
         # If a TelegramException was caught, an error handler should be called and no further
         # handlers from the same group should be called.
-        dp.add_handler(CommandHandler('start', start1), 1)
-        dp.add_handler(CommandHandler('start', start2), 1)
-        dp.add_handler(CommandHandler('start', start3), 2)
+        dp.add_handler(CommandHandler("start", start1), 1)
+        dp.add_handler(CommandHandler("start", start2), 1)
+        dp.add_handler(CommandHandler("start", start3), 2)
         dp.add_error_handler(error)
         dp.process_update(update)
-        assert passed == ['start1', 'error', err]
+        assert passed == ["start1", "error", err]
         assert passed[2] is err
 
     def test_error_handler_context(self, cdp):
         cdp.add_error_handler(self.callback_context)
 
-        error = TelegramError('Unauthorized.')
+        error = TelegramError("Unauthorized.")
         cdp.update_queue.put(error)
         sleep(0.1)
-        assert self.received == 'Unauthorized.'
+        assert self.received == "Unauthorized."
 
     def test_sensible_worker_thread_names(self, dp2):
         thread_names = [thread.name for thread in dp2._Dispatcher__async_threads]
@@ -735,7 +735,7 @@ class TestDispatcher:
                 self.store_callback_data = True
 
             def update(self, data):
-                raise Exception('PersistenceError')
+                raise Exception("PersistenceError")
 
             def update_callback_data(self, data):
                 self.update(data)
@@ -783,19 +783,19 @@ class TestDispatcher:
 
         def error(update, context):
             nonlocal test_flag
-            test_flag = str(context.error) == 'PersistenceError'
-            raise Exception('ErrorHandlingError')
+            test_flag = str(context.error) == "PersistenceError"
+            raise Exception("ErrorHandlingError")
 
         def logger(message):
-            assert 'uncaught error was raised while handling' in message
+            assert "uncaught error was raised while handling" in message
 
         update = Update(
-            1, message=Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+            1, message=Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
         )
         handler = MessageHandler(Filters.all, callback)
         cdp.add_handler(handler)
         cdp.add_error_handler(error)
-        monkeypatch.setattr(cdp.logger, 'exception', logger)
+        monkeypatch.setattr(cdp.logger, "exception", logger)
 
         cdp.persistence = OwnPersistence()
         cdp.process_update(update)
@@ -853,7 +853,7 @@ class TestDispatcher:
         cdp.persistence = OwnPersistence()
 
         update = Update(
-            1, message=Message(1, None, None, from_user=User(1, '', False), text='Text')
+            1, message=Message(1, None, None, from_user=User(1, "", False), text="Text")
         )
         cdp.process_update(update)
         assert cdp.persistence.test_flag_bot_data
@@ -863,7 +863,7 @@ class TestDispatcher:
         cdp.persistence.test_flag_bot_data = False
         cdp.persistence.test_flag_user_data = False
         cdp.persistence.test_flag_chat_data = False
-        update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text='Text'))
+        update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text="Text"))
         cdp.process_update(update)
         assert cdp.persistence.test_flag_bot_data
         assert not cdp.persistence.test_flag_user_data
@@ -876,16 +876,16 @@ class TestDispatcher:
         def dummy_callback(*args):
             pass
 
-        monkeypatch.setattr(dp, 'update_persistence', update_persistence)
+        monkeypatch.setattr(dp, "update_persistence", update_persistence)
 
         for group in range(5):
             dp.add_handler(MessageHandler(Filters.text, dummy_callback), group=group)
 
-        update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text=None))
+        update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text=None))
         dp.process_update(update)
         assert self.count == 0
 
-        update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text='text'))
+        update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text="text"))
         dp.process_update(update)
         assert self.count == 1
 
@@ -896,15 +896,15 @@ class TestDispatcher:
         def dummy_callback(*args, **kwargs):
             pass
 
-        monkeypatch.setattr(dp, 'update_persistence', update_persistence)
-        monkeypatch.setattr(dp, 'run_async', dummy_callback)
+        monkeypatch.setattr(dp, "update_persistence", update_persistence)
+        monkeypatch.setattr(dp, "run_async", dummy_callback)
 
         for group in range(5):
             dp.add_handler(
                 MessageHandler(Filters.text, dummy_callback, run_async=True), group=group
             )
 
-        update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text='Text'))
+        update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text="Text"))
         dp.process_update(update)
         assert self.count == 0
 
@@ -913,13 +913,13 @@ class TestDispatcher:
             for group in range(5):
                 dp.add_handler(MessageHandler(Filters.text, dummy_callback), group=group)
 
-            update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text='Text'))
+            update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text="Text"))
             dp.process_update(update)
             assert self.count == 0
         finally:
             dp.bot.defaults = None
 
-    @pytest.mark.parametrize('run_async', [DEFAULT_FALSE, False])
+    @pytest.mark.parametrize("run_async", [DEFAULT_FALSE, False])
     def test_update_persistence_one_sync(self, monkeypatch, dp, run_async):
         def update_persistence(*args, **kwargs):
             self.count += 1
@@ -927,8 +927,8 @@ class TestDispatcher:
         def dummy_callback(*args, **kwargs):
             pass
 
-        monkeypatch.setattr(dp, 'update_persistence', update_persistence)
-        monkeypatch.setattr(dp, 'run_async', dummy_callback)
+        monkeypatch.setattr(dp, "update_persistence", update_persistence)
+        monkeypatch.setattr(dp, "run_async", dummy_callback)
 
         for group in range(5):
             dp.add_handler(
@@ -936,11 +936,11 @@ class TestDispatcher:
             )
         dp.add_handler(MessageHandler(Filters.text, dummy_callback, run_async=run_async), group=5)
 
-        update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text='Text'))
+        update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text="Text"))
         dp.process_update(update)
         assert self.count == 1
 
-    @pytest.mark.parametrize('run_async,expected', [(DEFAULT_FALSE, 1), (False, 1), (True, 0)])
+    @pytest.mark.parametrize("run_async,expected", [(DEFAULT_FALSE, 1), (False, 1), (True, 0)])
     def test_update_persistence_defaults_async(self, monkeypatch, dp, run_async, expected):
         def update_persistence(*args, **kwargs):
             self.count += 1
@@ -948,15 +948,15 @@ class TestDispatcher:
         def dummy_callback(*args, **kwargs):
             pass
 
-        monkeypatch.setattr(dp, 'update_persistence', update_persistence)
-        monkeypatch.setattr(dp, 'run_async', dummy_callback)
+        monkeypatch.setattr(dp, "update_persistence", update_persistence)
+        monkeypatch.setattr(dp, "run_async", dummy_callback)
         dp.bot.defaults = Defaults(run_async=run_async)
 
         try:
             for group in range(5):
                 dp.add_handler(MessageHandler(Filters.text, dummy_callback), group=group)
 
-            update = Update(1, message=Message(1, None, Chat(1, ''), from_user=None, text='Text'))
+            update = Update(1, message=Message(1, None, Chat(1, ""), from_user=None, text="Text"))
             dp.process_update(update)
             assert self.count == expected
         finally:

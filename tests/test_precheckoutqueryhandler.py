@@ -34,44 +34,44 @@ from telegram import (
 )
 from telegram.ext import PreCheckoutQueryHandler, CallbackContext, JobQueue
 
-message = Message(1, None, Chat(1, ''), from_user=User(1, '', False), text='Text')
+message = Message(1, None, Chat(1, ""), from_user=User(1, "", False), text="Text")
 
 params = [
-    {'message': message},
-    {'edited_message': message},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat', message=message)},
-    {'channel_post': message},
-    {'edited_channel_post': message},
-    {'inline_query': InlineQuery(1, User(1, '', False), '', '')},
-    {'chosen_inline_result': ChosenInlineResult('id', User(1, '', False), '')},
-    {'shipping_query': ShippingQuery('id', User(1, '', False), '', None)},
-    {'callback_query': CallbackQuery(1, User(1, '', False), 'chat')},
+    {"message": message},
+    {"edited_message": message},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat", message=message)},
+    {"channel_post": message},
+    {"edited_channel_post": message},
+    {"inline_query": InlineQuery(1, User(1, "", False), "", "")},
+    {"chosen_inline_result": ChosenInlineResult("id", User(1, "", False), "")},
+    {"shipping_query": ShippingQuery("id", User(1, "", False), "", None)},
+    {"callback_query": CallbackQuery(1, User(1, "", False), "chat")},
 ]
 
 ids = (
-    'message',
-    'edited_message',
-    'callback_query',
-    'channel_post',
-    'edited_channel_post',
-    'inline_query',
-    'chosen_inline_result',
-    'shipping_query',
-    'callback_query_without_message',
+    "message",
+    "edited_message",
+    "callback_query",
+    "channel_post",
+    "edited_channel_post",
+    "inline_query",
+    "chosen_inline_result",
+    "shipping_query",
+    "callback_query_without_message",
 )
 
 
-@pytest.fixture(scope='class', params=params, ids=ids)
+@pytest.fixture(scope="class", params=params, ids=ids)
 def false_update(request):
     return Update(update_id=1, **request.param)
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def pre_checkout_query():
     return Update(
         1,
         pre_checkout_query=PreCheckoutQuery(
-            'id', User(1, 'test user', False), 'EUR', 223, 'invoice_payload'
+            "id", User(1, "test user", False), "EUR", 223, "invoice_payload"
         ),
     )
 
@@ -82,11 +82,11 @@ class TestPreCheckoutQueryHandler:
     def test_slot_behaviour(self, recwarn, mro_slots):
         inst = PreCheckoutQueryHandler(self.callback_basic)
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.callback = 'should give warning', self.callback_basic
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.callback = "should give warning", self.callback_basic
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):

@@ -96,25 +96,25 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
     # Apparently Py 3.7 and below have '__dict__' in ABC
     if py_ver < (3, 7):
         __slots__ = (
-            'store_user_data',
-            'store_chat_data',
-            'store_bot_data',
-            'store_callback_data',
-            'bot',
+            "store_user_data",
+            "store_chat_data",
+            "store_bot_data",
+            "store_callback_data",
+            "bot",
         )
     else:
         __slots__ = (
-            'store_user_data',  # type: ignore[assignment]
-            'store_chat_data',
-            'store_bot_data',
-            'store_callback_data',
-            'bot',
-            '__dict__',
+            "store_user_data",  # type: ignore[assignment]
+            "store_chat_data",
+            "store_bot_data",
+            "store_callback_data",
+            "bot",
+            "__dict__",
         )
 
     def __new__(
         cls, *args: object, **kwargs: object  # pylint: disable=W0613
-    ) -> 'BasePersistence':
+    ) -> "BasePersistence":
         """This overrides the get_* and update_* methods to use insert/replace_bot.
         That has the side effect that we always pass deepcopied data to those methods, so in
         Pickle/DictPersistence we don't have to worry about copying the data again.
@@ -161,14 +161,14 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
             return update_callback_data((instance.replace_bot(obj_data), queue))
 
         # We want to ignore TGDeprecation warnings so we use obj.__setattr__. Adds to __dict__
-        object.__setattr__(instance, 'get_user_data', get_user_data_insert_bot)
-        object.__setattr__(instance, 'get_chat_data', get_chat_data_insert_bot)
-        object.__setattr__(instance, 'get_bot_data', get_bot_data_insert_bot)
-        object.__setattr__(instance, 'get_callback_data', get_callback_data_insert_bot)
-        object.__setattr__(instance, 'update_user_data', update_user_data_replace_bot)
-        object.__setattr__(instance, 'update_chat_data', update_chat_data_replace_bot)
-        object.__setattr__(instance, 'update_bot_data', update_bot_data_replace_bot)
-        object.__setattr__(instance, 'update_callback_data', update_callback_data_replace_bot)
+        object.__setattr__(instance, "get_user_data", get_user_data_insert_bot)
+        object.__setattr__(instance, "get_chat_data", get_chat_data_insert_bot)
+        object.__setattr__(instance, "get_bot_data", get_bot_data_insert_bot)
+        object.__setattr__(instance, "get_callback_data", get_callback_data_insert_bot)
+        object.__setattr__(instance, "update_user_data", update_user_data_replace_bot)
+        object.__setattr__(instance, "update_chat_data", update_chat_data_replace_bot)
+        object.__setattr__(instance, "update_bot_data", update_bot_data_replace_bot)
+        object.__setattr__(instance, "update_callback_data", update_callback_data_replace_bot)
         return instance
 
     def __init__(
@@ -187,8 +187,8 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
     def __setattr__(self, key: str, value: object) -> None:
         # Allow user defined subclasses to have custom attributes.
         if issubclass(self.__class__, BasePersistence) and self.__class__.__name__ not in {
-            'DictPersistence',
-            'PicklePersistence',
+            "DictPersistence",
+            "PicklePersistence",
         }:
             object.__setattr__(self, key, value)
             return
@@ -201,7 +201,7 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
             bot (:class:`telegram.Bot`): The bot.
         """
         if self.store_callback_data and not isinstance(bot, telegram.ext.extbot.ExtBot):
-            raise TypeError('store_callback_data can only be used with telegram.ext.ExtBot.')
+            raise TypeError("store_callback_data can only be used with telegram.ext.ExtBot.")
 
         self.bot = bot
 
@@ -247,8 +247,8 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
         if isinstance(obj, type):
             # classes usually do have a __dict__, but it's not writable
             warnings.warn(
-                'BasePersistence.replace_bot does not handle classes. See '
-                'the docs of BasePersistence.replace_bot for more information.',
+                "BasePersistence.replace_bot does not handle classes. See "
+                "the docs of BasePersistence.replace_bot for more information.",
                 RuntimeWarning,
             )
             return obj
@@ -258,8 +258,8 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
             memo[obj_id] = new_obj
         except Exception:
             warnings.warn(
-                'BasePersistence.replace_bot does not handle objects that can not be copied. See '
-                'the docs of BasePersistence.replace_bot for more information.',
+                "BasePersistence.replace_bot does not handle objects that can not be copied. See "
+                "the docs of BasePersistence.replace_bot for more information.",
                 RuntimeWarning,
             )
             memo[obj_id] = obj
@@ -278,7 +278,7 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
             memo[obj_id] = new_obj
             return new_obj
         try:
-            if hasattr(obj, '__slots__'):
+            if hasattr(obj, "__slots__"):
                 for attr_name in new_obj.__slots__:
                     setattr(
                         new_obj,
@@ -287,20 +287,20 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
                             cls._replace_bot(getattr(new_obj, attr_name), memo), memo
                         ),
                     )
-                if '__dict__' in obj.__slots__:
+                if "__dict__" in obj.__slots__:
                     # In this case, we have already covered the case that obj has __dict__
                     # Note that obj may have a __dict__ even if it's not in __slots__!
                     memo[obj_id] = new_obj
                     return new_obj
-            if hasattr(obj, '__dict__'):
+            if hasattr(obj, "__dict__"):
                 for attr_name, attr in new_obj.__dict__.items():
                     setattr(new_obj, attr_name, cls._replace_bot(attr, memo))
                 memo[obj_id] = new_obj
                 return new_obj
         except Exception as exception:
             warnings.warn(
-                f'Parsing of an object failed with the following exception: {exception}. '
-                f'See the docs of BasePersistence.replace_bot for more information.',
+                f"Parsing of an object failed with the following exception: {exception}. "
+                f"See the docs of BasePersistence.replace_bot for more information.",
                 RuntimeWarning,
             )
 
@@ -350,8 +350,8 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
         if isinstance(obj, type):
             # classes usually do have a __dict__, but it's not writable
             warnings.warn(
-                'BasePersistence.insert_bot does not handle classes. See '
-                'the docs of BasePersistence.insert_bot for more information.',
+                "BasePersistence.insert_bot does not handle classes. See "
+                "the docs of BasePersistence.insert_bot for more information.",
                 RuntimeWarning,
             )
             return obj
@@ -360,8 +360,8 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
             new_obj = copy(obj)
         except Exception:
             warnings.warn(
-                'BasePersistence.insert_bot does not handle objects that can not be copied. See '
-                'the docs of BasePersistence.insert_bot for more information.',
+                "BasePersistence.insert_bot does not handle objects that can not be copied. See "
+                "the docs of BasePersistence.insert_bot for more information.",
                 RuntimeWarning,
             )
             memo[obj_id] = obj
@@ -380,7 +380,7 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
             memo[obj_id] = new_obj
             return new_obj
         try:
-            if hasattr(obj, '__slots__'):
+            if hasattr(obj, "__slots__"):
                 for attr_name in obj.__slots__:
                     setattr(
                         new_obj,
@@ -389,20 +389,20 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
                             self._insert_bot(getattr(new_obj, attr_name), memo), memo
                         ),
                     )
-                if '__dict__' in obj.__slots__:
+                if "__dict__" in obj.__slots__:
                     # In this case, we have already covered the case that obj has __dict__
                     # Note that obj may have a __dict__ even if it's not in __slots__!
                     memo[obj_id] = new_obj
                     return new_obj
-            if hasattr(obj, '__dict__'):
+            if hasattr(obj, "__dict__"):
                 for attr_name, attr in new_obj.__dict__.items():
                     setattr(new_obj, attr_name, self._insert_bot(attr, memo))
                 memo[obj_id] = new_obj
                 return new_obj
         except Exception as exception:
             warnings.warn(
-                f'Parsing of an object failed with the following exception: {exception}. '
-                f'See the docs of BasePersistence.insert_bot for more information.',
+                f"Parsing of an object failed with the following exception: {exception}. "
+                f"See the docs of BasePersistence.insert_bot for more information.",
                 RuntimeWarning,
             )
 
@@ -562,5 +562,5 @@ class BasePersistence(Generic[UD, CD, BD], ABC):
         persistence a chance to finish up saving or close a database connection gracefully.
         """
 
-    REPLACED_BOT: ClassVar[str] = 'bot_instance_replaced_by_ptb_persistence'
+    REPLACED_BOT: ClassVar[str] = "bot_instance_replaced_by_ptb_persistence"
     """:obj:`str`: Placeholder for :class:`telegram.Bot` instances replaced in saved data."""

@@ -28,7 +28,7 @@ from .utils.types import CCT
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
+RT = TypeVar("RT")
 
 
 class StringCommandHandler(Handler[str, CCT]):
@@ -86,7 +86,7 @@ class StringCommandHandler(Handler[str, CCT]):
 
     """
 
-    __slots__ = ('command', 'pass_args')
+    __slots__ = ("command", "pass_args")
 
     def __init__(
         self,
@@ -116,15 +116,15 @@ class StringCommandHandler(Handler[str, CCT]):
             :obj:`bool`
 
         """
-        if isinstance(update, str) and update.startswith('/'):
-            args = update[1:].split(' ')
+        if isinstance(update, str) and update.startswith("/"):
+            args = update[1:].split(" ")
             if args[0] == self.command:
                 return args[1:]
         return None
 
     def collect_optional_args(
         self,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         update: str = None,
         check_result: Optional[List[str]] = None,
     ) -> Dict[str, object]:
@@ -133,14 +133,14 @@ class StringCommandHandler(Handler[str, CCT]):
         """
         optional_args = super().collect_optional_args(dispatcher, update, check_result)
         if self.pass_args:
-            optional_args['args'] = check_result
+            optional_args["args"] = check_result
         return optional_args
 
     def collect_additional_context(
         self,
         context: CCT,
         update: str,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         check_result: Optional[List[str]],
     ) -> None:
         """Add text after the command to :attr:`CallbackContext.args` as list, split on single

@@ -91,8 +91,8 @@ class DelayQueue(threading.Thread):
         name: str = None,
     ):
         warnings.warn(
-            'DelayQueue in its current form is deprecated and will be reinvented in a future '
-            'release. See https://git.io/JtDbF for a list of known bugs.',
+            "DelayQueue in its current form is deprecated and will be reinvented in a future "
+            "release. See https://git.io/JtDbF for a list of known bugs.",
             category=TelegramDeprecationWarning,
         )
 
@@ -103,7 +103,7 @@ class DelayQueue(threading.Thread):
         self.__exit_req = False  # flag to gently exit thread
         self.__class__._instcnt += 1
         if name is None:
-            name = f'{self.__class__.__name__}-{self.__class__._instcnt}'
+            name = f"{self.__class__.__name__}-{self.__class__._instcnt}"
         super().__init__(name=name)
         self.daemon = False
         if autostart:  # immediately start processing
@@ -175,7 +175,7 @@ class DelayQueue(threading.Thread):
 
         """
         if not self.is_alive() or self.__exit_req:
-            raise DelayQueueError('Could not process callback in stopped thread')
+            raise DelayQueueError("Could not process callback in stopped thread")
         self._queue.put((func, args, kwargs))
 
 
@@ -225,8 +225,8 @@ class MessageQueue:
         autostart: bool = True,
     ):
         warnings.warn(
-            'MessageQueue in its current form is deprecated and will be reinvented in a future '
-            'release. See https://git.io/JtDbF for a list of known bugs.',
+            "MessageQueue in its current form is deprecated and will be reinvented in a future "
+            "release. See https://git.io/JtDbF for a list of known bugs.",
             category=TelegramDeprecationWarning,
         )
 
@@ -254,7 +254,7 @@ class MessageQueue:
         self._group_delayq.stop(timeout=timeout)
         self._all_delayq.stop(timeout=timeout)
 
-    stop.__doc__ = DelayQueue.stop.__doc__ or ''  # reuse docstring if any
+    stop.__doc__ = DelayQueue.stop.__doc__ or ""  # reuse docstring if any
 
     def __call__(self, promise: Callable, is_group_msg: bool = False) -> Callable:
         """
@@ -320,12 +320,12 @@ def queuedmessage(method: Callable) -> Callable:
     """
 
     @functools.wraps(method)
-    def wrapped(self: 'Bot', *args: object, **kwargs: object) -> object:
+    def wrapped(self: "Bot", *args: object, **kwargs: object) -> object:
         # pylint: disable=W0212
         queued = kwargs.pop(
-            'queued', self._is_messages_queued_default  # type: ignore[attr-defined]
+            "queued", self._is_messages_queued_default  # type: ignore[attr-defined]
         )
-        isgroup = kwargs.pop('isgroup', False)
+        isgroup = kwargs.pop("isgroup", False)
         if queued:
             prom = Promise(method, (self,) + args, kwargs)
             return self._msg_queue(prom, isgroup)  # type: ignore[attr-defined]

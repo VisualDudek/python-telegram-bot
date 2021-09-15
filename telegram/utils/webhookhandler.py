@@ -25,8 +25,8 @@ import telegram.ext.utils.webhookhandler as webhook_handler
 from telegram.utils.deprecate import TelegramDeprecationWarning
 
 warnings.warn(
-    'telegram.utils.webhookhandler is deprecated. Please use telegram.ext.utils.webhookhandler '
-    'instead.',
+    "telegram.utils.webhookhandler is deprecated. Please use telegram.ext.utils.webhookhandler "
+    "instead.",
     TelegramDeprecationWarning,
 )
 

@@ -21,7 +21,7 @@ import pytest
 from telegram import ShippingAddress, OrderInfo
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def order_info():
     return OrderInfo(
         TestOrderInfo.name,
@@ -32,25 +32,25 @@ def order_info():
 
 
 class TestOrderInfo:
-    name = 'name'
-    phone_number = 'phone_number'
-    email = 'email'
-    shipping_address = ShippingAddress('GB', '', 'London', '12 Grimmauld Place', '', 'WC1')
+    name = "name"
+    phone_number = "phone_number"
+    email = "email"
+    shipping_address = ShippingAddress("GB", "", "London", "12 Grimmauld Place", "", "WC1")
 
     def test_slot_behaviour(self, order_info, mro_slots, recwarn):
         for attr in order_info.__slots__:
-            assert getattr(order_info, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(order_info, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not order_info.__dict__, f"got missing slot(s): {order_info.__dict__}"
         assert len(mro_slots(order_info)) == len(set(mro_slots(order_info))), "duplicate slot"
-        order_info.custom, order_info.name = 'should give warning', self.name
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        order_info.custom, order_info.name = "should give warning", self.name
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     def test_de_json(self, bot):
         json_dict = {
-            'name': TestOrderInfo.name,
-            'phone_number': TestOrderInfo.phone_number,
-            'email': TestOrderInfo.email,
-            'shipping_address': TestOrderInfo.shipping_address.to_dict(),
+            "name": TestOrderInfo.name,
+            "phone_number": TestOrderInfo.phone_number,
+            "email": TestOrderInfo.email,
+            "shipping_address": TestOrderInfo.shipping_address.to_dict(),
         }
         order_info = OrderInfo.de_json(json_dict, bot)
 
@@ -63,37 +63,37 @@ class TestOrderInfo:
         order_info_dict = order_info.to_dict()
 
         assert isinstance(order_info_dict, dict)
-        assert order_info_dict['name'] == order_info.name
-        assert order_info_dict['phone_number'] == order_info.phone_number
-        assert order_info_dict['email'] == order_info.email
-        assert order_info_dict['shipping_address'] == order_info.shipping_address.to_dict()
+        assert order_info_dict["name"] == order_info.name
+        assert order_info_dict["phone_number"] == order_info.phone_number
+        assert order_info_dict["email"] == order_info.email
+        assert order_info_dict["shipping_address"] == order_info.shipping_address.to_dict()
 
     def test_equality(self):
         a = OrderInfo(
-            'name',
-            'number',
-            'mail',
-            ShippingAddress('GB', '', 'London', '12 Grimmauld Place', '', 'WC1'),
+            "name",
+            "number",
+            "mail",
+            ShippingAddress("GB", "", "London", "12 Grimmauld Place", "", "WC1"),
         )
         b = OrderInfo(
-            'name',
-            'number',
-            'mail',
-            ShippingAddress('GB', '', 'London', '12 Grimmauld Place', '', 'WC1'),
+            "name",
+            "number",
+            "mail",
+            ShippingAddress("GB", "", "London", "12 Grimmauld Place", "", "WC1"),
         )
         c = OrderInfo(
-            'name',
-            'number',
-            'mail',
-            ShippingAddress('GB', '', 'London', '13 Grimmauld Place', '', 'WC1'),
+            "name",
+            "number",
+            "mail",
+            ShippingAddress("GB", "", "London", "13 Grimmauld Place", "", "WC1"),
         )
         d = OrderInfo(
-            'name',
-            'number',
-            'e-mail',
-            ShippingAddress('GB', '', 'London', '12 Grimmauld Place', '', 'WC1'),
+            "name",
+            "number",
+            "e-mail",
+            ShippingAddress("GB", "", "London", "12 Grimmauld Place", "", "WC1"),
         )
-        e = ShippingAddress('GB', '', 'London', '12 Grimmauld Place', '', 'WC1')
+        e = ShippingAddress("GB", "", "London", "12 Grimmauld Place", "", "WC1")
 
         assert a == b
         assert hash(a) == hash(b)

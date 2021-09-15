@@ -33,11 +33,11 @@ class TestPromise:
     def test_slot_behaviour(self, recwarn, mro_slots):
         inst = Promise(self.test_call, [], {})
         for attr in inst.__slots__:
-            assert getattr(inst, attr, 'err') != 'err', f"got extra slot '{attr}'"
+            assert getattr(inst, attr, "err") != "err", f"got extra slot '{attr}'"
         assert not inst.__dict__, f"got missing slot(s): {inst.__dict__}"
         assert len(mro_slots(inst)) == len(set(mro_slots(inst))), "duplicate slot"
-        inst.custom, inst.args = 'should give warning', []
-        assert len(recwarn) == 1 and 'custom' in str(recwarn[0].message), recwarn.list
+        inst.custom, inst.args = "should give warning", []
+        assert len(recwarn) == 1 and "custom" in str(recwarn[0].message), recwarn.list
 
     @pytest.fixture(autouse=True)
     def reset(self):
@@ -55,7 +55,7 @@ class TestPromise:
 
     def test_run_with_exception(self):
         def callback():
-            raise TelegramError('Error')
+            raise TelegramError("Error")
 
         promise = Promise(callback, [], {})
         promise.run()
@@ -66,12 +66,12 @@ class TestPromise:
 
     def test_wait_for_exception(self):
         def callback():
-            raise TelegramError('Error')
+            raise TelegramError("Error")
 
         promise = Promise(callback, [], {})
         promise.run()
 
-        with pytest.raises(TelegramError, match='Error'):
+        with pytest.raises(TelegramError, match="Error"):
             promise.result()
 
     def test_done_cb_after_run(self):
@@ -139,7 +139,7 @@ class TestPromise:
 
     def test_done_cb_not_run_on_excp(self):
         def callback():
-            raise TelegramError('Error')
+            raise TelegramError("Error")
 
         def done_callback(_):
             self.test_flag = True

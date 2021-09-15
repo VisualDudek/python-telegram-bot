@@ -31,7 +31,7 @@ from telegram.ext.utils.types import CCT
 if TYPE_CHECKING:
     from telegram.ext import Dispatcher
 
-RT = TypeVar('RT')
+RT = TypeVar("RT")
 
 
 class RegexHandler(MessageHandler):
@@ -109,7 +109,7 @@ class RegexHandler(MessageHandler):
 
     """
 
-    __slots__ = ('pass_groups', 'pass_groupdict')
+    __slots__ = ("pass_groups", "pass_groupdict")
 
     def __init__(
         self,
@@ -128,7 +128,7 @@ class RegexHandler(MessageHandler):
         run_async: Union[bool, DefaultValue] = DEFAULT_FALSE,
     ):
         warnings.warn(
-            'RegexHandler is deprecated. See https://git.io/fxJuV for more info',
+            "RegexHandler is deprecated. See https://git.io/fxJuV for more info",
             TelegramDeprecationWarning,
             stacklevel=2,
         )
@@ -149,7 +149,7 @@ class RegexHandler(MessageHandler):
 
     def collect_optional_args(
         self,
-        dispatcher: 'Dispatcher',
+        dispatcher: "Dispatcher",
         update: Update = None,
         check_result: Optional[Union[bool, Dict[str, Any]]] = None,
     ) -> Dict[str, object]:
@@ -160,7 +160,7 @@ class RegexHandler(MessageHandler):
         optional_args = super().collect_optional_args(dispatcher, update, check_result)
         if isinstance(check_result, dict):
             if self.pass_groups:
-                optional_args['groups'] = check_result['matches'][0].groups()
+                optional_args["groups"] = check_result["matches"][0].groups()
             if self.pass_groupdict:
-                optional_args['groupdict'] = check_result['matches'][0].groupdict()
+                optional_args["groupdict"] = check_result["matches"][0].groupdict()
         return optional_args
